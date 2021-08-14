@@ -31,7 +31,17 @@ function App() {
     )
 
     function exportVmf(){
-        console.log(mapper.vmf())
+        
+        var c = document.createElement("a");
+        c.download = "mallet.vmf";
+
+        var t = new Blob([mapper.vmf()], {
+            type: "text/plain"
+        });
+        c.href = window.URL.createObjectURL(t);
+        c.click();
+
+
     }
 
     return (
