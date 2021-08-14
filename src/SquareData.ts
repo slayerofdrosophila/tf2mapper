@@ -10,10 +10,13 @@ class SquareData{
     hasSouthWall: boolean = false
     hasEastWall: boolean = false
     hasWestWall: boolean = false
+    hasFloor: boolean = true
+    hasSky: boolean = true
 
     hasHealth: boolean = false
     hasPit: boolean = false
     hasPoint: boolean = false
+    hasSpwan: boolean = false
 
     constructor(x: number,y: number) {
         this.yCoord = y
@@ -28,6 +31,9 @@ class SquareData{
         this.hasHealth = other.hasHealth
         this.hasPit = other.hasPit
         this.hasPoint = other.hasPoint
+        this.hasFloor = other.hasFloor
+        this.hasSky = other.hasSky
+        this.hasSpwan = other.hasSpwan
     }
     clone():SquareData {
         const newsq = new SquareData(this.xCoord, this.yCoord)
@@ -39,10 +45,13 @@ class SquareData{
         newsq.hasHealth = this.hasHealth
         newsq.hasPit = this.hasPit
         newsq.hasPoint = this.hasPoint
+        newsq.hasFloor = this.hasFloor
+        newsq.hasSky = this.hasSky
+        newsq.hasSpwan = this.hasSpwan
         return newsq
     }
-    
-    generateVmf(id: number){
+
+    generateSolidsVmf(id: number){
         // origin
         // thickness
         // length
@@ -54,11 +63,7 @@ class SquareData{
 
         const origin = new Point(0,0,0)
         const up = [0,0,height]
-
-        var wallNorth = null
-        var wallSouth = null
-        var wallWest = null
-        var wallEast = null
+        const floorup = [0,0,thickness]
 
         var walls = []
 
@@ -67,7 +72,7 @@ class SquareData{
             const backward = new Point(0, -length, 0)
             const side = new Side(right, origin, backward)
 
-            wallWest = new Wall(side, up)
+            const wallWest = new Wall(side, up)
             walls[2] = wallWest
         }
         if (this.hasEastWall){
@@ -75,7 +80,7 @@ class SquareData{
             const backward = new Point(0, -length, 0)
             const side = new Side(right, origin, backward)
 
-            wallEast = new Wall(side, up)
+            const wallEast = new Wall(side, up)
             wallEast.translate(length - thickness,0,0)
             walls[3] = wallEast
         }
@@ -84,7 +89,7 @@ class SquareData{
             const right = new Point(length, 0, 0)
             const side = new Side(right, origin, down)
 
-            wallNorth = new Wall(side, up)
+            const wallNorth = new Wall(side, up)
             walls[0] = wallNorth
         }
         if (this.hasSouthWall){ // this is up n down wall
@@ -92,9 +97,26 @@ class SquareData{
             const right = new Point(length, 0, 0)
             const side = new Side(right, origin, down)
 
-            wallSouth = new Wall(side, up)
+            const wallSouth = new Wall(side, up)
             wallSouth.translate(0,-length + thickness,0)
             walls[1] = wallSouth
+        }
+        if (this.hasFloor){ // this is up n down wall
+            const down = new Point(-0,-length,0)
+            const right = new Point(length, 0, 0)
+            const side = new Side(right, origin, down)
+
+            const floor = new Wall(side, floorup)
+            walls[4] = floor
+        }
+        if (this.hasSky){ // this is up n down wall
+            const down = new Point(-0,-length,0)
+            const right = new Point(length, 0, 0)
+            const side = new Side(right, origin, down)
+
+            const sky = new Wall(side, floorup)
+            sky.translate(0,0,height - thickness)
+            walls[5] = sky
         }
 
         var bobby = ""
@@ -107,6 +129,34 @@ class SquareData{
             }})
         return bobby
     }
+
+    generateEntitiesVmf(id: number) {
+        const thickness = 32
+        const height = 256
+        const length = 256
+        var bobby = ""
+        if (this.hasSpwan){
+            const spawnCenter = new Point(length/2, -length/2, thickness)
+            spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 0)
+            bobby += `entity
+{
+  "id" "3"
+  "classname" "info_player_teamspawn"
+  "angles" "0 0 0"
+  "spawnflags" "511"
+  "origin" "${spawnCenter.pointsvmf()}"
+  editor
+  {
+    "color" "220 30 220"
+    "visgroupshown" "1"
+    "visgroupautoshown" "1"
+    "logicalpos" "[0 500]"
+  }
+}`
+        }
+        return bobby
+    }
 }
+
 
 export{SquareData}

@@ -31,7 +31,7 @@ function App() {
     )
 
     function exportVmf(){
-        
+
         var c = document.createElement("a");
         c.download = "mallet.vmf";
 

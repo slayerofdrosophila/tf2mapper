@@ -55,6 +55,11 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         point_picture = <img className={"Overlay"} src={controlpoint}/>
     }
 
+    var spqwn_picture = null
+    if (data.hasSpwan){
+        spqwn_picture = <img className={"Overlay"} src={controlpoint}/>
+    }
+
     function handleKeyUp(event: any){
         if (event.key === "ArrowUp"){
             if (data.hasNorthWall) {
@@ -98,6 +103,8 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             } else{
                 data.hasPoint = true
             }
+        } else if (event.key === "s"){
+            data.hasSpwan = !data.hasSpwan
         }
         props.handleUpdate(data)
         // setData({...data}) // this updates the state, very importatnt
@@ -122,7 +129,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             <img src={square} />
             {deathpit_picture}{point_picture}
             {wall_north_picture}{wall_south_picture}{wall_east_picture}{wall_west_picture}
-            {health_picture}
+            {health_picture}{spqwn_picture}
         </div>
     );
 }

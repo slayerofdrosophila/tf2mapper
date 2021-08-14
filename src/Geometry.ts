@@ -36,6 +36,9 @@ class Point{
     vmf(){
         return (`(${this.x} ${this.y} ${this.z})`)
     }
+    pointsvmf(){
+        return (`${this.x} ${this.y} ${this.z}`)
+    }
 }
 
 class Side{
@@ -143,7 +146,7 @@ class Wall{
         `
     }
 }
-function worldVmf(worldData: string){
+function mapVmf(worldData: string, entitiesData: string) {
     return(
         `
                 versioninfo
@@ -167,21 +170,8 @@ viewsettings
 }
 
 
-world
-{
-  "id" "1"
-  "mapversion" "4"
-  "classname" "worldspawn"
-  "detailmaterial" "detail/detailsprites"
-  "detailvbsp" "detail.vbsp"
-  "maxpropscreenwidth" "-1"
-  "skyname" "sky_day01_01"
-  
-${worldData}
-
-}
-
-
+${worldVmf(worldData)}
+${entitiesData}
 
 cameras
 {
@@ -195,8 +185,25 @@ cordon
 }
 
 
+`)
+}
+function worldVmf(worldData: string){
+    return(`
+world
+{
+  "id" "1"
+  "mapversion" "4"
+  "classname" "worldspawn"
+  "detailmaterial" "detail/detailsprites"
+  "detailvbsp" "detail.vbsp"
+  "maxpropscreenwidth" "-1"
+  "skyname" "sky_day01_01"
+  
+${worldData}
+
+}
 `
     )
 } 
 
-export {Point, Side, Wall, worldVmf}
+export {Point, Side, Wall, mapVmf}

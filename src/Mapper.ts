@@ -1,5 +1,5 @@
 import {SquareData} from "./SquareData";
-import {worldVmf} from "./Geometry";
+import {mapVmf} from "./Geometry";
 
 
 class Mapper{
@@ -37,17 +37,21 @@ class Mapper{
     }
 
     vmf(){
-        var returnString = ""
-
-
-
-        for (var i = 0; i < this.mapHeight; i++){
-            for (var p = 0; p < this.mapWidth; p++){
-                var squareVmf = this.rows[i][p].generateVmf(875675)
-                returnString += squareVmf
+        var worldString = ""
+        for (let i = 0; i < this.mapHeight; i++){
+            for (let p = 0; p < this.mapWidth; p++){
+                let squareVmf = this.rows[i][p].generateSolidsVmf(875675)
+                worldString += squareVmf
             }
         }
-        returnString = worldVmf(returnString)
+        var entitiesString = ""
+        for (let i = 0; i < this.mapHeight; i++){
+            for (let p = 0; p < this.mapWidth; p++){
+                let squareVmf = this.rows[i][p].generateEntitiesVmf(875675)
+                entitiesString += squareVmf
+            }
+        }
+        const returnString = mapVmf(worldString, entitiesString)
         return returnString
     }
 }
