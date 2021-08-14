@@ -11,7 +11,7 @@ function App() {
     // generate table from dimensions?
     // collect square data and put into vmf
 
-    const [mapper, setMapper] = useState(new Mapper(31,15))
+    const [mapper, setMapper] = useState(new Mapper(5,5))
 
     function handleUpdate(data:SquareData) {
         mapper.mirror(data.xCoord, data.yCoord)
@@ -30,6 +30,10 @@ function App() {
         }
     )
 
+    function exportVmf(){
+        console.log(mapper.vmf())
+    }
+
     return (
         <div>
             <table>
@@ -39,6 +43,10 @@ function App() {
                 </tr>
                 </tbody>
             </table>
+
+            <button onClick={exportVmf}>
+                Click herer to iehoirt
+            </button>
         </div>
     );
 }

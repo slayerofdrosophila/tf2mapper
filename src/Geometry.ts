@@ -44,9 +44,9 @@ class Side{
     topRight: Point
 
     constructor(p1: Point,p2: Point,p3: Point) {
-        this.bottomLeft= p1
-        this.topLeft = p2
-        this.topRight = p3
+        this.bottomLeft= p1.clone()
+        this.topLeft = p2.clone()
+        this.topRight = p3.clone()
     }
 
     translate(x: number,y: number,z: number){
@@ -94,7 +94,7 @@ class Wall{
     side2: Side
 
     constructor(side: Side, displacement: number[]) {
-        this.side1 = side
+        this.side1 = side.clone()
 
         this.side2 = new Side(
             side.bottomLeft.clone().translate(displacement[0], displacement[1], displacement[2]),
@@ -143,10 +143,10 @@ class Wall{
         `
     }
 }
-function worldVmf(walls: Wall[]){
+function worldVmf(worldData: string){
     return(
         `
-        versioninfo
+                versioninfo
 {
   "editorversion" "400"
   "editorbuild" "8610"
@@ -165,6 +165,8 @@ viewsettings
   "nGridSpacing" "64"
   "bShow3DGrid" "0"
 }
+
+
 world
 {
   "id" "1"
@@ -174,10 +176,13 @@ world
   "detailvbsp" "detail.vbsp"
   "maxpropscreenwidth" "-1"
   "skyname" "sky_day01_01"
-
-${walls[0].vmf(1)}
+  
+${worldData}
 
 }
+
+
+
 cameras
 {
   "activecamera" "-1"
@@ -188,6 +193,8 @@ cordon
   "maxs" "(1024 1024 1024)"
   "active" "0"
 }
+
+
 `
     )
 } 

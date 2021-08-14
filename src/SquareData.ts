@@ -42,7 +42,7 @@ class SquareData{
         return newsq
     }
     
-    generateVmf(mode: string, id: number){
+    generateVmf(id: number){
         // origin
         // thickness
         // length
@@ -62,7 +62,7 @@ class SquareData{
 
         var walls = []
 
-        if (mode === "west" ){
+        if (this.hasWestWall ){
             const right = new Point(thickness,0,0)
             const backward = new Point(0, -length, 0)
             const side = new Side(right, origin, backward)
@@ -70,7 +70,7 @@ class SquareData{
             wallWest = new Wall(side, up)
             walls[2] = wallWest
         }
-        if (mode === "east"){
+        if (this.hasEastWall){
             const right = new Point(thickness,0,0)
             const backward = new Point(0, -length, 0)
             const side = new Side(right, origin, backward)
@@ -79,7 +79,7 @@ class SquareData{
             wallEast.translate(length - thickness,0,0)
             walls[3] = wallEast
         }
-        if (mode === "north"){
+        if (this.hasNorthWall){
             const down = new Point(-0,-thickness,0)
             const right = new Point(length, 0, 0)
             const side = new Side(right, origin, down)
@@ -87,7 +87,7 @@ class SquareData{
             wallNorth = new Wall(side, up)
             walls[0] = wallNorth
         }
-        if (mode === "south"){ // this is up n down wall
+        if (this.hasSouthWall){ // this is up n down wall
             const down = new Point(-0,-thickness,0)
             const right = new Point(length, 0, 0)
             const side = new Side(right, origin, down)
@@ -97,9 +97,15 @@ class SquareData{
             walls[1] = wallSouth
         }
 
+        var bobby = ""
 
-        walls.forEach(wall => wall.translate(length * this.xCoord, length * this.yCoord, 0))
-        return walls
+        walls.forEach(wall => {
+            if (wall != null) {
+                wall.translate(length * this.xCoord, length * -this.yCoord, 0)
+                bobby += wall.vmf(id)
+                id += 6
+            }})
+        return bobby
     }
 }
 

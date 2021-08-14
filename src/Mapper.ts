@@ -1,4 +1,5 @@
 import {SquareData} from "./SquareData";
+import {worldVmf} from "./Geometry";
 
 
 class Mapper{
@@ -37,12 +38,16 @@ class Mapper{
 
     vmf(){
         var returnString = ""
+
+
+
         for (var i = 0; i < this.mapHeight; i++){
             for (var p = 0; p < this.mapWidth; p++){
                 var squareVmf = this.rows[i][p].generateVmf(875675)
                 returnString += squareVmf
             }
         }
+        returnString = worldVmf(returnString)
         return returnString
     }
 }
