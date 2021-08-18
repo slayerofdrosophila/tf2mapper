@@ -75,15 +75,26 @@ class Side{
         return (new Side(this.bottomLeft, this.topLeft, this.topRight))
     }
 
-    vmf(id: number, material: string = "DEV/REFLECTIVITY_50") {
+    vmf(id: number, material: string = "DEV/REFLECTIVITY_50", sideNumber: number) {
+
+        // sideNumber is like 012345
+        // represents the direction it faces, like north, or bottom
+
+        const uvStrings = ["\"uaxis\" \"[1 0 0 0] 0.25\"\n" +
+        "\t\t\t\"vaxis\" \"[0 -1 0 0] 0.25\"", "\"uaxis\" \"[1 0 0 0] 0.25\"\n" +
+        "\t\t\t\"vaxis\" \"[0 -1 0 0] 0.25\"", "\"uaxis\" \"[0 1 0 0] 0.25\"\n" +
+        "\t\t\t\"vaxis\" \"[0 0 -1 0] 0.25\"", "\"uaxis\" \"[1 0 0 0] 0.25\"\n" +
+        "\t\t\t\"vaxis\" \"[0 0 -1 0] 0.25\"", "\"uaxis\" \"[0 1 0 0] 0.25\"\n" +
+        "\t\t\t\"vaxis\" \"[0 0 -1 0] 0.25\"", "\"uaxis\" \"[1 0 0 0] 0.25\"\n" +
+        "\t\t\t\"vaxis\" \"[0 0 -1 0] 0.25\""]
+
         return `
         side
     {
       "id" "${id}"
       "plane" "${this.bottomLeft.vmf()} ${this.topLeft.vmf()} ${this.topRight.vmf()}"
       "material" "${material}"
-      "uaxis" "[1 0 0 0] 0.25"
-      "vaxis" "[0 -1 0 0] 0.25"
+      ${uvStrings[sideNumber]}
       "rotation" "0"
       "lightmapscale" "16"
       "smoothing_groups" "0"
@@ -129,12 +140,12 @@ class Block {
             solid
               {
                 "id" "${counter.count()}"
-                ${this.side1.vmf(counter.count(), material)}
-                ${this.side2.vmf(counter.count(), material)}
-                ${side3.vmf(counter.count(), material)}
-                ${side4.vmf(counter.count(), material)}
-                ${side5.vmf(counter.count(), material)}
-                ${side6.vmf(counter.count(), material)}
+                ${this.side1.vmf(counter.count(), material,0)}
+                ${this.side2.vmf(counter.count(), material,1)}
+                ${side3.vmf(counter.count(), material,2)}
+                ${side4.vmf(counter.count(), material,3)}
+                ${side5.vmf(counter.count(), material,4)}
+                ${side6.vmf(counter.count(), material,5)}
                 editor
                 {
                   "color" "0 249 146"

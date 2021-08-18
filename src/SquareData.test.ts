@@ -3,13 +3,22 @@ import "./Geometry";
 import {Point, Block, Side} from "./Geometry";
 import {Mapper} from "./Mapper";
 
-const mapper = new Mapper(5,5)
+import "fs"
+import {appendFile} from "fs";
 
-mapper.rows[0][0].hasNorthWall = true
-mapper.rows[0][0].hasWestWall = true
-mapper.rows[4][2].hasEastWall = true
+const mapper = new Mapper(1,1)
 
-console.log(mapper.vmf())
+mapper.rows[0][0].hasNorthWall = false
+mapper.rows[0][0].hasEastWall = false
+mapper.rows[0][0].hasNorthDoor = true
+mapper.rows[0][0].hasSouthDoor = true
+mapper.rows[0][0].hasEastDoor = true
+mapper.rows[0][0].hasWestDoor = true
+
+appendFile("testdata1.vmf",mapper.vmf(), function (err){
+    if (err) throw err;
+    console.log("saved!!")
+})
 
 const sd = new SquareData(0,0)
 const sd2 = new SquareData(1,0)

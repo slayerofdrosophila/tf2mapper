@@ -49,10 +49,27 @@ function App() {
             <table>
                 <tbody>
                 <tr>
-                    {grid}
+                    <td>
+                        <table>
+                            <tbody>
+                            <tr>
+                                {grid}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Hover over a square to select it</li>
+                            <li>Press an arrow key to place a wall there in that direction</li>
+                            <li>Press S to place a spawn point (Left/up side is blue)</li>
+                            <li>Press SHIFT + an arrow key to place a shutter door there in that direction</li>
+                        </ul>
+                    </td>
                 </tr>
                 </tbody>
             </table>
+
 
             <button onClick={exportVmf}>
                 Click here to export

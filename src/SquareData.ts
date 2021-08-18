@@ -1,4 +1,4 @@
-import {Point, Side, Block} from "./Geometry";
+import {Block, Point, Side} from "./Geometry";
 import {Counter} from "./Mapper";
 
 
@@ -19,7 +19,10 @@ class SquareData{
     hasPoint: boolean = false
     hasSpawn: boolean = false
 
-    hasDoor: boolean = false
+    hasNorthDoor: boolean = false
+    hasSouthDoor: boolean = false
+    hasEastDoor: boolean = false
+    hasWestDoor: boolean = false
 
     spawnTeam: number = 2 // 2 = BLU; 3 = RED
 
@@ -40,7 +43,11 @@ class SquareData{
         this.hasSky = other.hasSky
         this.hasSpawn = other.hasSpawn
         this.spawnTeam = other.spawnTeam + 1
-        this.hasDoor = other.hasDoor
+        this.hasNorthDoor = other.hasNorthDoor
+        this.hasSouthDoor = other.hasSouthDoor
+        this.hasEastDoor = other.hasEastDoor
+        this.hasWestDoor = other.hasWestDoor
+
     }
     clone():SquareData {
         const newsq = new SquareData(this.xCoord, this.yCoord)
@@ -56,12 +63,78 @@ class SquareData{
         newsq.hasSky = this.hasSky
         newsq.hasSpawn = this.hasSpawn
 
-        newsq.hasDoor = this.hasDoor
+        newsq.hasNorthDoor = this.hasNorthDoor
+        newsq.hasSouthDoor = this.hasSouthDoor
+        newsq.hasEastDoor = this.hasEastDoor
+        newsq.hasWestDoor = this.hasWestDoor
 
         return newsq
     }
 
+    // move this to a more appropriate class later! like Side or something
+    generateBlock(height: number, thickness: number, direction: string){
+        const origin = new Point(0,0,0)
+        const up = [0,0,height]
+        const floorup = [0,0,thickness]
 
+        const length = 256
+
+
+        if (direction == "west" ){
+            const right = new Point(thickness,0,0)
+            const backward = new Point(0, -length, 0)
+            const side = new Side(right, origin, backward)
+
+            const wall = new Block(side, up)
+            return wall
+        }
+        if (direction == "east"){
+            const right = new Point(thickness,0,0)
+            const backward = new Point(0, -length, 0)
+            const side = new Side(right, origin, backward)
+
+            const wall = new Block(side, up)
+            wall.translate(length - thickness,0,0)
+            return wall
+        }
+        if (direction == "north"){
+            const down = new Point(-0,-thickness,0)
+            const right = new Point(length, 0, 0)
+            const side = new Side(right, origin, down)
+
+            const wall = new Block(side, up)
+            return wall
+        }
+        if (direction == "south"){ // this is up n down wall
+            const down = new Point(-0,-thickness,0)
+            const right = new Point(length, 0, 0)
+            const side = new Side(right, origin, down)
+
+            const wall = new Block(side, up)
+            wall.translate(0,-length + thickness,0)
+            return wall
+        }
+        if (direction == "floor"){ // this is up n down wall
+            const down = new Point(-0,-length,0)
+            const right = new Point(length, 0, 0)
+            const side = new Side(right, origin, down)
+
+            const wall = new Block(side, floorup)
+            return wall
+        }
+        if (direction == "sky" || direction == "ceiling"){ // this is up n down wall
+            const down = new Point(-0,-length,0)
+            const right = new Point(length, 0, 0)
+            const side = new Side(right, origin, down)
+
+            const wall = new Block(side, floorup)
+            wall.translate(0,0,height - thickness)
+            return wall
+        }
+        throw new Error("Invalid block direction: " + direction);
+
+
+    }
 
     generateSolidsVmf(counter: Counter){
         // origin
@@ -73,62 +146,29 @@ class SquareData{
         const height = 256
         const length = 256
 
-        const origin = new Point(0,0,0)
-        const up = [0,0,height]
-        const floorup = [0,0,thickness]
 
         var walls = []
 
         if (this.hasWestWall ){
-            const right = new Point(thickness,0,0)
-            const backward = new Point(0, -length, 0)
-            const side = new Side(right, origin, backward)
-
-            const wallWest = new Block(side, up)
-            walls[2] = wallWest
+            walls[2] = this.generateBlock(height, thickness, "west")
         }
         if (this.hasEastWall){
-            const right = new Point(thickness,0,0)
-            const backward = new Point(0, -length, 0)
-            const side = new Side(right, origin, backward)
-
-            const wallEast = new Block(side, up)
-            wallEast.translate(length - thickness,0,0)
-            walls[3] = wallEast
+            walls[3] = this.generateBlock(height, thickness, "east")
         }
         if (this.hasNorthWall){
-            const down = new Point(-0,-thickness,0)
-            const right = new Point(length, 0, 0)
-            const side = new Side(right, origin, down)
-
-            const wallNorth = new Block(side, up)
-            walls[0] = wallNorth
+            walls[0] = this.generateBlock(height, thickness, "north")
         }
         if (this.hasSouthWall){ // this is up n down wall
-            const down = new Point(-0,-thickness,0)
-            const right = new Point(length, 0, 0)
-            const side = new Side(right, origin, down)
 
-            const wallSouth = new Block(side, up)
-            wallSouth.translate(0,-length + thickness,0)
-            walls[1] = wallSouth
+            walls[1] = this.generateBlock(height, thickness, "south")
         }
         if (this.hasFloor){ // this is up n down wall
-            const down = new Point(-0,-length,0)
-            const right = new Point(length, 0, 0)
-            const side = new Side(right, origin, down)
 
-            const floor = new Block(side, floorup)
-            walls[4] = floor
+            walls[4] = this.generateBlock(height, thickness, "floor")
         }
         if (this.hasSky){ // this is up n down wall
-            const down = new Point(-0,-length,0)
-            const right = new Point(length, 0, 0)
-            const side = new Side(right, origin, down)
 
-            const sky = new Block(side, floorup)
-            sky.translate(0,0,height - thickness)
-            walls[5] = sky
+            walls[5] = this.generateBlock(height, thickness, "sky")
         }
 
         var bobby = ""
@@ -136,6 +176,7 @@ class SquareData{
         walls.forEach(wall => {
             if (wall != null) {
                 wall.translate(length * this.xCoord, length * -this.yCoord, 0)
+                bobby += "//"
                 bobby += wall.vmf(counter)
             }})
         return bobby
@@ -146,7 +187,7 @@ class SquareData{
         const height = 256
         const length = 256
 
-        var bobby = ""
+        var returnString = ""
 
         const down = new Point(-0,-length,0)
         const right = new Point(length, 0, 0)
@@ -158,7 +199,7 @@ class SquareData{
         if (this.hasSpawn){
             const spawnCenter = new Point(length/2, -length/2, thickness)
             spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 16)
-            bobby += `
+            returnString += `
                 entity
                 {
                   "id" "${counter.count()}"
@@ -194,7 +235,131 @@ class SquareData{
         } // end of hasSpawn block
 
 
-        return bobby
+
+        if (this.hasNorthDoor || this.hasSouthDoor || this.hasWestDoor || this.hasEastDoor){ // if has any doors?
+            // make: door
+
+            const doorOrigin = new Point(length/2, -length/2, thickness)
+            doorOrigin.translate(length * this.xCoord, length * -this.yCoord, height/2) // move door to the right square's corner
+
+            var doorBlock = null
+
+            var doors: Block[] = []
+            var doorTriggers: Block[] = []
+
+            if (this.hasNorthDoor){
+                doors[0] = this.generateBlock(height, thickness/2, "north")
+                doorTriggers[0] = this.generateBlock(height,thickness * 10, "north" )
+                doors[0].translate(length * this.xCoord, length * -this.yCoord, 0)
+                doorTriggers[0].translate(length * this.xCoord, length * -this.yCoord + thickness*4.5, 0)
+            }
+            if (this.hasSouthDoor){
+                doors[1] = this.generateBlock(height, thickness/2, "south")
+                doorTriggers[1] = this.generateBlock(height,thickness * 10, "south" )
+                doors[1].translate(length * this.xCoord, length * -this.yCoord, 0)
+                doorTriggers[1].translate(length * this.xCoord, length * -this.yCoord - thickness*4.5, 0)
+            }
+            if (this.hasWestDoor){
+                doors[2] = this.generateBlock(height, thickness/2, "west")
+                doorTriggers[2] = this.generateBlock(height,thickness * 10, "west" )
+                doors[2].translate(length * this.xCoord, length * -this.yCoord, 0)
+                doorTriggers[2].translate(length * this.xCoord - thickness*4.5, length * -this.yCoord, 0)
+            }
+            if (this.hasEastDoor){
+                doors[3] = this.generateBlock(height, thickness/2, "east")
+                doorTriggers[3] = this.generateBlock(height,thickness * 10, "east" )
+                doors[3].translate(length * this.xCoord, length * -this.yCoord, 0)
+                doorTriggers[3].translate(length * this.xCoord + thickness*4.5, length * -this.yCoord, 0)
+            }
+
+
+            for (var i = 0; i < doors.length; i++){
+                if (doors[i] != null){
+
+                    const doorNumber = "door" + counter.count()
+
+                    returnString +=
+                        `
+                            entity
+                    {
+                        "id" "${counter.count()}"
+                        "classname" "func_door"
+                        "disablereceiveshadows" "0"
+                        "disableshadows" "0"
+                        "dmg" "0"
+                        "forceclosed" "0"
+                        "health" "0"
+                        "ignoredebris" "0"
+                        "lip" "0"
+                        "locked_sentence" "0"
+                        "loopmovesound" "0"
+                        "movedir" "0 0 0"
+                        "origin" "${doorOrigin.pointsvmf()}"
+                        "renderamt" "255"
+                        "rendercolor" "255 255 255"
+                        "renderfx" "0"
+                        "rendermode" "0"
+                        "spawnflags" "1024"
+                        "spawnpos" "0"
+                        "speed" "1000"
+                        "targetname" "${doorNumber}"
+                        "unlocked_sentence" "0"
+                        "wait" "-1"
+                        
+                        ${doors[i].vmf(counter, "METAL/METALDOOR001")} 
+                        // this increments counter by 7
+                        
+                        editor
+                        {
+                            "color" "220 30 220"
+                            "visgroupshown" "1"
+                            "visgroupautoshown" "1"
+                            "logicalpos" "[0 500]"
+                        }
+                    }
+                    
+                    entity
+                    {
+                      "id" "${counter.count()}" 
+                      "classname" "trigger_multiple"
+                      "origin" "0 0 96"
+                      "spawnflags" "1"
+                      "StartDisabled" "0"
+                      "targetname" "${doorNumber}"
+                      "wait" "-1"
+                      connections
+                      {
+                        "OnStartTouchAll" "${doorNumber},Open,,0,-1"
+                        "OnEndTouchAll" "${doorNumber},Close,,0,-1"
+                      }
+                      
+                      ${doorTriggers[i].vmf(counter, "TOOLS/TOOLSTRIGGER")}
+                      
+                                            editor
+                          {
+                            "color" "220 30 220"
+                            "visgroupshown" "1"
+                            "visgroupautoshown" "1"
+                            "logicalpos" "[0 500]"
+                          }
+                    }`
+                }
+
+            }
+            
+        } // end of hasNorthDoor block
+
+
+        return returnString
+    }
+
+    createDoor(counter: Counter, direction: string, height: number, length: number, thickness: number){
+        if (direction == "north"){
+            const doorOrigin = new Point(length/2, -length/2, thickness)
+            doorOrigin.translate(length * this.xCoord, length * -this.yCoord, height/2)
+            const doorBlock = this.generateBlock(height, thickness / 2, "north")
+        }
+
     }
 }
 

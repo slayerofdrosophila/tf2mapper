@@ -63,28 +63,28 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
 
     function handleKeyUp(event: any){
         if (event.key === "ArrowUp"){
-            if (data.hasNorthWall) {
-                data.hasNorthWall = false
+            if (event.shiftKey){
+                data.hasNorthDoor = !data.hasNorthDoor
             } else{
-                data.hasNorthWall = true
+                data.hasNorthWall = !data.hasNorthWall
             }
         } else if (event.key === "ArrowDown"){
-            if (data.hasSouthWall) {
-                data.hasSouthWall = false
+            if (event.shiftKey){
+                data.hasSouthDoor = !data.hasSouthDoor
             } else{
-                data.hasSouthWall = true
+                data.hasSouthWall = !data.hasSouthWall
             }
         } else if (event.key === "ArrowRight"){
-            if (data.hasEastWall) {
-                data.hasEastWall = false
+            if (event.shiftKey){
+                data.hasEastDoor = !data.hasEastDoor
             } else{
-                data.hasEastWall = true
+                data.hasEastWall = !data.hasEastWall
             }
         } else if(event.key === "ArrowLeft"){
-            if (data.hasWestWall) {
-                data.hasWestWall = false
+            if (event.shiftKey){
+                data.hasWestDoor = !data.hasWestWall
             } else{
-                data.hasWestWall = true
+                data.hasWestWall = !data.hasWestWall
             }
         } else if (event.key === "h"){
             if (data.hasHealth) {
