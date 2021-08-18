@@ -37,17 +37,21 @@ class Mapper{
     }
 
     vmf(){
+
+        const counter = new Counter()
+
         var worldString = ""
+
         for (let i = 0; i < this.mapHeight; i++){
             for (let p = 0; p < this.mapWidth; p++){
-                let squareVmf = this.rows[i][p].generateSolidsVmf(875675)
+                let squareVmf = this.rows[i][p].generateSolidsVmf(counter)
                 worldString += squareVmf
             }
         }
         var entitiesString = ""
         for (let i = 0; i < this.mapHeight; i++){
             for (let p = 0; p < this.mapWidth; p++){
-                let squareVmf = this.rows[i][p].generateEntitiesVmf(875675)
+                let squareVmf = this.rows[i][p].generateEntitiesVmf(counter)
                 entitiesString += squareVmf
             }
         }
@@ -56,4 +60,17 @@ class Mapper{
     }
 }
 
-export {Mapper}
+class Counter{
+    runningCount: number
+
+    constructor() {
+        this.runningCount = 0
+    }
+
+    count(){
+        this.runningCount++
+        return this.runningCount
+    }
+}
+
+export {Mapper, Counter}

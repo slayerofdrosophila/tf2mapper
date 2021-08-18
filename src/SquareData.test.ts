@@ -1,6 +1,6 @@
 import {SquareData} from "./SquareData";
 import "./Geometry";
-import {Point, Wall, Side} from "./Geometry";
+import {Point, Block, Side} from "./Geometry";
 import {Mapper} from "./Mapper";
 
 const mapper = new Mapper(5,5)

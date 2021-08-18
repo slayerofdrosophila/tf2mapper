@@ -8,6 +8,7 @@ import wall_east from './assets/wall_east.png';
 import health_small from './assets/health_small.png';
 import deathpit from './assets/deathpit.png';
 import controlpoint from './assets/cp_neutral.png'
+import spawn_red from './assets/spawn_red.png'
 
 import './App.css';
 import {on} from "cluster";
@@ -55,9 +56,9 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         point_picture = <img className={"Overlay"} src={controlpoint}/>
     }
 
-    var spqwn_picture = null
-    if (data.hasSpwan){
-        spqwn_picture = <img className={"Overlay"} src={controlpoint}/>
+    var spawn_picture = null
+    if (data.hasSpawn){
+        spawn_picture = <img className={"Overlay"} src={spawn_red}/>
     }
 
     function handleKeyUp(event: any){
@@ -104,7 +105,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
                 data.hasPoint = true
             }
         } else if (event.key === "s"){
-            data.hasSpwan = !data.hasSpwan
+            data.hasSpawn = !data.hasSpawn
         }
         props.handleUpdate(data)
         // setData({...data}) // this updates the state, very importatnt
@@ -129,7 +130,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             <img src={square} />
             {deathpit_picture}{point_picture}
             {wall_north_picture}{wall_south_picture}{wall_east_picture}{wall_west_picture}
-            {health_picture}{spqwn_picture}
+            {health_picture}{spawn_picture}
         </div>
     );
 }

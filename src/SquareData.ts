@@ -1,4 +1,5 @@
-import {Point, Side, Wall} from "./Geometry";
+import {Point, Side, Block} from "./Geometry";
+import {Counter} from "./Mapper";
 
 
 class SquareData{
@@ -16,7 +17,11 @@ class SquareData{
     hasHealth: boolean = false
     hasPit: boolean = false
     hasPoint: boolean = false
-    hasSpwan: boolean = false
+    hasSpawn: boolean = false
+
+    hasDoor: boolean = false
+
+    spawnTeam: number = 2 // 2 = BLU; 3 = RED
 
     constructor(x: number,y: number) {
         this.yCoord = y
@@ -33,7 +38,9 @@ class SquareData{
         this.hasPoint = other.hasPoint
         this.hasFloor = other.hasFloor
         this.hasSky = other.hasSky
-        this.hasSpwan = other.hasSpwan
+        this.hasSpawn = other.hasSpawn
+        this.spawnTeam = other.spawnTeam + 1
+        this.hasDoor = other.hasDoor
     }
     clone():SquareData {
         const newsq = new SquareData(this.xCoord, this.yCoord)
@@ -47,11 +54,16 @@ class SquareData{
         newsq.hasPoint = this.hasPoint
         newsq.hasFloor = this.hasFloor
         newsq.hasSky = this.hasSky
-        newsq.hasSpwan = this.hasSpwan
+        newsq.hasSpawn = this.hasSpawn
+
+        newsq.hasDoor = this.hasDoor
+
         return newsq
     }
 
-    generateSolidsVmf(id: number){
+
+
+    generateSolidsVmf(counter: Counter){
         // origin
         // thickness
         // length
@@ -72,7 +84,7 @@ class SquareData{
             const backward = new Point(0, -length, 0)
             const side = new Side(right, origin, backward)
 
-            const wallWest = new Wall(side, up)
+            const wallWest = new Block(side, up)
             walls[2] = wallWest
         }
         if (this.hasEastWall){
@@ -80,7 +92,7 @@ class SquareData{
             const backward = new Point(0, -length, 0)
             const side = new Side(right, origin, backward)
 
-            const wallEast = new Wall(side, up)
+            const wallEast = new Block(side, up)
             wallEast.translate(length - thickness,0,0)
             walls[3] = wallEast
         }
@@ -89,7 +101,7 @@ class SquareData{
             const right = new Point(length, 0, 0)
             const side = new Side(right, origin, down)
 
-            const wallNorth = new Wall(side, up)
+            const wallNorth = new Block(side, up)
             walls[0] = wallNorth
         }
         if (this.hasSouthWall){ // this is up n down wall
@@ -97,7 +109,7 @@ class SquareData{
             const right = new Point(length, 0, 0)
             const side = new Side(right, origin, down)
 
-            const wallSouth = new Wall(side, up)
+            const wallSouth = new Block(side, up)
             wallSouth.translate(0,-length + thickness,0)
             walls[1] = wallSouth
         }
@@ -106,7 +118,7 @@ class SquareData{
             const right = new Point(length, 0, 0)
             const side = new Side(right, origin, down)
 
-            const floor = new Wall(side, floorup)
+            const floor = new Block(side, floorup)
             walls[4] = floor
         }
         if (this.hasSky){ // this is up n down wall
@@ -114,7 +126,7 @@ class SquareData{
             const right = new Point(length, 0, 0)
             const side = new Side(right, origin, down)
 
-            const sky = new Wall(side, floorup)
+            const sky = new Block(side, floorup)
             sky.translate(0,0,height - thickness)
             walls[5] = sky
         }
@@ -124,36 +136,64 @@ class SquareData{
         walls.forEach(wall => {
             if (wall != null) {
                 wall.translate(length * this.xCoord, length * -this.yCoord, 0)
-                bobby += wall.vmf(id)
-                id += 6
+                bobby += wall.vmf(counter)
             }})
         return bobby
     }
 
-    generateEntitiesVmf(id: number) {
+    generateEntitiesVmf(counter: Counter) {
         const thickness = 32
         const height = 256
         const length = 256
+
         var bobby = ""
-        if (this.hasSpwan){
+
+        const down = new Point(-0,-length,0)
+        const right = new Point(length, 0, 0)
+        const side = new Side(right, new Point(0,0,0), down)
+
+        const block = new Block(side, [0,0,height])
+        block.translate(length * this.xCoord, length * -this.yCoord, 0)
+
+        if (this.hasSpawn){
             const spawnCenter = new Point(length/2, -length/2, thickness)
-            spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 0)
-            bobby += `entity
-{
-  "id" "3"
-  "classname" "info_player_teamspawn"
-  "angles" "0 0 0"
-  "spawnflags" "511"
-  "origin" "${spawnCenter.pointsvmf()}"
-  editor
-  {
-    "color" "220 30 220"
-    "visgroupshown" "1"
-    "visgroupautoshown" "1"
-    "logicalpos" "[0 500]"
-  }
-}`
-        }
+            spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 16)
+            bobby += `
+                entity
+                {
+                  "id" "${counter.count()}"
+                  "classname" "func_respawnroom"
+                  "StartDisabled" "0"
+                  "TeamNum" "0"
+                    "id" "${counter.count()}"
+                    ${block.vmf(counter, "TOOLS/TOOLSTRIGGER")}
+                  editor
+                  {
+                    "color" "220 30 220"
+                    "visgroupshown" "1"
+                    "visgroupautoshown" "1"
+                    "logicalpos" "[0 500]"
+                  }
+                }      
+                            entity
+                {
+                  "id" "${counter.count()}"
+                  "classname" "info_player_teamspawn"
+                  "angles" "0 0 0"
+                  "spawnflags" "511"
+                  "TeamNum" "${this.spawnTeam}"
+                  "origin" "${spawnCenter.pointsvmf()}"
+                  editor
+                  {
+                    "color" "220 30 220"
+                    "visgroupshown" "1"
+                    "visgroupautoshown" "1"
+                    "logicalpos" "[0 500]"
+                  }
+                }`
+        } // end of hasSpawn block
+
+
         return bobby
     }
 }

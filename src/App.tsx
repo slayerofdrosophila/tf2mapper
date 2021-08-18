@@ -55,7 +55,7 @@ function App() {
             </table>
 
             <button onClick={exportVmf}>
-                Click herer to iehoirt
+                Click here to export
             </button>
         </div>
     );

@@ -1,4 +1,4 @@
-
+import {Counter} from "./Mapper";
 
 class Point{
     x: number
@@ -75,13 +75,13 @@ class Side{
         return (new Side(this.bottomLeft, this.topLeft, this.topRight))
     }
 
-    vmf(id: number){
+    vmf(id: number, material: string = "DEV/REFLECTIVITY_50") {
         return `
         side
     {
       "id" "${id}"
       "plane" "${this.bottomLeft.vmf()} ${this.topLeft.vmf()} ${this.topRight.vmf()}"
-      "material" "DEV/REFLECTIVITY_50"
+      "material" "${material}"
       "uaxis" "[1 0 0 0] 0.25"
       "vaxis" "[0 -1 0 0] 0.25"
       "rotation" "0"
@@ -92,7 +92,7 @@ class Side{
     }
 }
 
-class Wall{
+class Block {
     side1: Side
     side2: Side
 
@@ -104,7 +104,6 @@ class Wall{
             side.fourthPoint().clone().translate(displacement[0], displacement[1], displacement[2]),
             side.topRight.clone().translate(displacement[0], displacement[1], displacement[2])
         )
-
     }
 
     dilate(factor: number){
@@ -119,7 +118,7 @@ class Wall{
         return this
     }
 
-    vmf(id: number){
+    vmf(counter: Counter, material:string = "DEV/REFLECTIVITY_50"){
 
         const side3 = new Side(this.side2.bottomLeft, this.side1.bottomLeft, this.side1.fourthPoint())
         const side4 = new Side(this.side1.topRight, this.side2.topRight, this.side2.topLeft)
@@ -127,22 +126,22 @@ class Wall{
         const side6 = new Side(this.side1.topLeft, this.side1.bottomLeft, this.side2.bottomLeft)
 
         return  `
-        solid
-  {
-    "id" "${id}"
-    ${this.side1.vmf(1)}
-    ${this.side2.vmf(2)}
-    ${side3.vmf(3)}
-    ${side4.vmf(4)}
-    ${side5.vmf(5)}
-    ${side6.vmf(6)}
-    editor
-    {
-      "color" "0 249 146"
-      "visgroupshown" "1"
-      "visgroupautoshown" "1"
-    }
-  }
+            solid
+              {
+                "id" "${counter.count()}"
+                ${this.side1.vmf(counter.count(), material)}
+                ${this.side2.vmf(counter.count(), material)}
+                ${side3.vmf(counter.count(), material)}
+                ${side4.vmf(counter.count(), material)}
+                ${side5.vmf(counter.count(), material)}
+                ${side6.vmf(counter.count(), material)}
+                editor
+                {
+                  "color" "0 249 146"
+                  "visgroupshown" "1"
+                  "visgroupautoshown" "1"
+                }
+              }
         `
     }
 }
@@ -168,9 +167,19 @@ viewsettings
   "nGridSpacing" "64"
   "bShow3DGrid" "0"
 }
+world
+{
+  "id" "1"
+  "mapversion" "4"
+  "classname" "worldspawn"
+  "detailmaterial" "detail/detailsprites"
+  "detailvbsp" "detail.vbsp"
+  "maxpropscreenwidth" "-1"
+  "skyname" "sky_day01_01"
+  
+  ${worldData}
+}
 
-
-${worldVmf(worldData)}
 ${entitiesData}
 
 cameras
@@ -187,23 +196,5 @@ cordon
 
 `)
 }
-function worldVmf(worldData: string){
-    return(`
-world
-{
-  "id" "1"
-  "mapversion" "4"
-  "classname" "worldspawn"
-  "detailmaterial" "detail/detailsprites"
-  "detailvbsp" "detail.vbsp"
-  "maxpropscreenwidth" "-1"
-  "skyname" "sky_day01_01"
-  
-${worldData}
 
-}
-`
-    )
-} 
-
-export {Point, Side, Wall, mapVmf}
+export {Point, Side, Block, mapVmf}
