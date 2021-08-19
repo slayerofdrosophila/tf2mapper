@@ -42,11 +42,17 @@ class SquareData{
         this.hasFloor = other.hasFloor
         this.hasSky = other.hasSky
         this.hasSpawn = other.hasSpawn
-        this.spawnTeam = other.spawnTeam + 1
+
         this.hasNorthDoor = other.hasNorthDoor
         this.hasSouthDoor = other.hasSouthDoor
         this.hasEastDoor = other.hasEastDoor
         this.hasWestDoor = other.hasWestDoor
+
+        if (this.spawnTeam == 2){
+            other.spawnTeam = 3
+        } if (this.spawnTeam == 3){
+            other.spawnTeam = 2
+        }
 
     }
     clone():SquareData {
@@ -62,11 +68,14 @@ class SquareData{
         newsq.hasFloor = this.hasFloor
         newsq.hasSky = this.hasSky
         newsq.hasSpawn = this.hasSpawn
+        newsq.spawnTeam = this.spawnTeam
 
         newsq.hasNorthDoor = this.hasNorthDoor
         newsq.hasSouthDoor = this.hasSouthDoor
         newsq.hasEastDoor = this.hasEastDoor
         newsq.hasWestDoor = this.hasWestDoor
+
+
 
         return newsq
     }
@@ -137,10 +146,6 @@ class SquareData{
     }
 
     generateSolidsVmf(counter: Counter){
-        // origin
-        // thickness
-        // length
-        // height
 
         const thickness = 32
         const height = 256
@@ -199,6 +204,7 @@ class SquareData{
         if (this.hasSpawn){
             const spawnCenter = new Point(length/2, -length/2, thickness)
             spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 16)
+
             returnString += `
                 entity
                 {
@@ -246,6 +252,56 @@ class SquareData{
 
             var doors: Block[] = []
             var doorTriggers: Block[] = []
+
+            var filterString = ""
+            var filterEntityString = ""
+
+            if (this.hasSpawn){ // 2 = RED, 3 = BLU
+                if (this.spawnTeam === 2){
+                    filterString = "\"filtername\" \"filter_red\""  
+                    filterEntityString = `
+                        entity
+                            {
+                              "id" "21403"
+                              "classname" "filter_activator_tfteam"
+                              "Negated" "Allow entities that match criteria"
+                              "targetname" "filter_red"
+                              "TeamNum" "2"
+                              "origin" "${doorOrigin.pointsvmf()}"
+                              editor
+                              {
+                                "color" "220 30 220"
+                                "visgroupshown" "1"
+                                "visgroupautoshown" "1"
+                                "logicalpos" "[1000 4000]"
+                              }
+                            }
+                        `
+                } if (this.spawnTeam === 3){
+                    filterString = "\"filtername\" \"filter_blu\""
+                    filterEntityString = `
+                        entity
+                            {
+                              "id" "21403"
+                              "classname" "filter_activator_tfteam"
+                              "Negated" "Allow entities that match criteria"
+                              "targetname" "filter_blu"
+                              "TeamNum" "3"
+                              "origin" "${doorOrigin.pointsvmf()}"
+                              editor
+                              {
+                                "color" "220 30 220"
+                                "visgroupshown" "1"
+                                "visgroupautoshown" "1"
+                                "logicalpos" "[1000 4000]"
+                              }
+                            }
+                        `
+                }
+            }
+
+
+
 
             if (this.hasNorthDoor){
                 doors[0] = this.generateBlock(height, thickness/2, "north")
@@ -322,6 +378,7 @@ class SquareData{
                     {
                       "id" "${counter.count()}" 
                       "classname" "trigger_multiple"
+                      ${filterString}
                       "origin" "0 0 96"
                       "spawnflags" "1"
                       "StartDisabled" "0"
@@ -342,11 +399,15 @@ class SquareData{
                             "visgroupautoshown" "1"
                             "logicalpos" "[0 500]"
                           }
-                    }`
+                    }
+                    
+                    ${filterEntityString}
+                    
+                    `
                 }
 
             }
-            
+
         } // end of hasNorthDoor block
 
 

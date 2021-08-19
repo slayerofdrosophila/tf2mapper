@@ -57,13 +57,13 @@ function App() {
                             </tr>
                             </tbody>
                         </table>
-                    </td>
-                    <td>
+
                         <ul>
                             <li>Hover over a square to select it</li>
                             <li>Press an arrow key to place a wall there in that direction</li>
                             <li>Press S to place a spawn point (Left/up side is blue)</li>
                             <li>Press SHIFT + an arrow key to place a shutter door there in that direction</li>
+                            <li>HINT: Zoom out to fit the entire grid on your screen, if needed</li>
                         </ul>
                     </td>
                 </tr>
