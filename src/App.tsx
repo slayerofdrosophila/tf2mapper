@@ -57,11 +57,14 @@ function App() {
                             </tr>
                             </tbody>
                         </table>
+                        <button onClick={exportVmf}>Click here to export</button>
 
+                        <p>Instructions</p>
                         <ul>
                             <li>Hover over a square to select it</li>
                             <li>Press an arrow key to place a wall there in that direction</li>
                             <li>Press S to place a spawn point (Left/up side is blue)</li>
+                            <ul><li>Spawn points will face left-right towards the middle</li></ul>
                             <li>Press SHIFT + an arrow key to place a shutter door there in that direction</li>
                             <li>HINT: Zoom out to fit the entire grid on your screen, if needed</li>
                         </ul>
@@ -70,10 +73,6 @@ function App() {
                 </tbody>
             </table>
 
-
-            <button onClick={exportVmf}>
-                Click here to export
-            </button>
         </div>
     );
 }

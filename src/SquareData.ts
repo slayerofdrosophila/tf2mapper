@@ -24,7 +24,7 @@ class SquareData{
     hasEastDoor: boolean = false
     hasWestDoor: boolean = false
 
-    spawnTeam: number = 2 // 2 = BLU; 3 = RED
+    spawnTeam: number = 2 // 3 = BLU; 2 = RED
 
     constructor(x: number,y: number) {
         this.yCoord = y
@@ -43,10 +43,10 @@ class SquareData{
         this.hasSky = other.hasSky
         this.hasSpawn = other.hasSpawn
 
-        this.hasNorthDoor = other.hasNorthDoor
-        this.hasSouthDoor = other.hasSouthDoor
-        this.hasEastDoor = other.hasEastDoor
-        this.hasWestDoor = other.hasWestDoor
+        this.hasNorthDoor = other.hasSouthDoor
+        this.hasSouthDoor = other.hasNorthDoor
+        this.hasEastDoor = other.hasWestDoor
+        this.hasWestDoor = other.hasEastDoor
 
         if (this.spawnTeam == 2){
             other.spawnTeam = 3
@@ -205,6 +205,11 @@ class SquareData{
             const spawnCenter = new Point(length/2, -length/2, thickness)
             spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 16)
 
+            let spawnAngles = "0 0 0" // this faces east
+            if (this.spawnTeam == 2){
+                spawnAngles = "0 180 0" // this faces west
+            }
+
             returnString += `
                 entity
                 {
@@ -226,7 +231,7 @@ class SquareData{
                 {
                   "id" "${counter.count()}"
                   "classname" "info_player_teamspawn"
-                  "angles" "0 0 0"
+                  "angles" "${spawnAngles}"
                   "spawnflags" "511"
                   "TeamNum" "${this.spawnTeam}"
                   "origin" "${spawnCenter.pointsvmf()}"
@@ -258,7 +263,7 @@ class SquareData{
 
             if (this.hasSpawn){ // 2 = RED, 3 = BLU
                 if (this.spawnTeam === 2){
-                    filterString = "\"filtername\" \"filter_red\""  
+                    filterString = "\"filtername\" \"filter_red\""
                     filterEntityString = `
                         entity
                             {
@@ -305,27 +310,27 @@ class SquareData{
 
             if (this.hasNorthDoor){
                 doors[0] = this.generateBlock(height, thickness/2, "north")
-                doorTriggers[0] = this.generateBlock(height,thickness * 10, "north" )
+                doorTriggers[0] = this.generateBlock(height,thickness * 6, "north" )
                 doors[0].translate(length * this.xCoord, length * -this.yCoord, 0)
-                doorTriggers[0].translate(length * this.xCoord, length * -this.yCoord + thickness*4.5, 0)
+                doorTriggers[0].translate(length * this.xCoord, length * -this.yCoord + thickness*3, 0)
             }
             if (this.hasSouthDoor){
                 doors[1] = this.generateBlock(height, thickness/2, "south")
-                doorTriggers[1] = this.generateBlock(height,thickness * 10, "south" )
+                doorTriggers[1] = this.generateBlock(height,thickness * 6, "south" )
                 doors[1].translate(length * this.xCoord, length * -this.yCoord, 0)
-                doorTriggers[1].translate(length * this.xCoord, length * -this.yCoord - thickness*4.5, 0)
+                doorTriggers[1].translate(length * this.xCoord, length * -this.yCoord - thickness*3, 0)
             }
             if (this.hasWestDoor){
                 doors[2] = this.generateBlock(height, thickness/2, "west")
-                doorTriggers[2] = this.generateBlock(height,thickness * 10, "west" )
+                doorTriggers[2] = this.generateBlock(height,thickness * 6, "west" )
                 doors[2].translate(length * this.xCoord, length * -this.yCoord, 0)
-                doorTriggers[2].translate(length * this.xCoord - thickness*4.5, length * -this.yCoord, 0)
+                doorTriggers[2].translate(length * this.xCoord - thickness*3, length * -this.yCoord, 0)
             }
             if (this.hasEastDoor){
                 doors[3] = this.generateBlock(height, thickness/2, "east")
-                doorTriggers[3] = this.generateBlock(height,thickness * 10, "east" )
+                doorTriggers[3] = this.generateBlock(height,thickness * 6, "east" )
                 doors[3].translate(length * this.xCoord, length * -this.yCoord, 0)
-                doorTriggers[3].translate(length * this.xCoord + thickness*4.5, length * -this.yCoord, 0)
+                doorTriggers[3].translate(length * this.xCoord + thickness*3, length * -this.yCoord, 0)
             }
 
 
@@ -349,13 +354,13 @@ class SquareData{
                         "lip" "0"
                         "locked_sentence" "0"
                         "loopmovesound" "0"
-                        "movedir" "0 0 0"
+                        "movedir" "-90 0 0"
                         "origin" "${doorOrigin.pointsvmf()}"
                         "renderamt" "255"
                         "rendercolor" "255 255 255"
                         "renderfx" "0"
                         "rendermode" "0"
-                        "spawnflags" "1024"
+                        "spawnflags" "0"
                         "spawnpos" "0"
                         "speed" "1000"
                         "targetname" "${doorNumber}"
@@ -382,8 +387,8 @@ class SquareData{
                       "origin" "0 0 96"
                       "spawnflags" "1"
                       "StartDisabled" "0"
-                      "targetname" "${doorNumber}"
-                      "wait" "-1"
+                      "targetname" "${"trigger"+doorNumber}"
+                      "wait" "1"
                       connections
                       {
                         "OnStartTouchAll" "${doorNumber},Open,,0,-1"
