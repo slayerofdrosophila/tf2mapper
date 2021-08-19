@@ -140,6 +140,15 @@ class SquareData{
             wall.translate(0,0,height - thickness)
             return wall
         }
+        if (direction == "almostfill"){
+            const down = new Point(1, -length + 1, 1)
+            const origin2 = new Point(1,-1,1)
+            const right = new Point(length-1, -1,1)
+            const side = new Side(right, origin2, down)
+            const wall = new Block(side, [0,0,(height-2)])
+
+            return wall
+        }
         throw new Error("Invalid block direction: " + direction);
 
 
@@ -205,6 +214,8 @@ class SquareData{
             const spawnCenter = new Point(length/2, -length/2, thickness)
             spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 16)
 
+            const spawnName = "spawn" + counter.count()
+
             let spawnAngles = "0 0 0" // this faces east
             if (this.spawnTeam == 2){
                 spawnAngles = "0 180 0" // this faces west
@@ -217,7 +228,7 @@ class SquareData{
                   "classname" "func_respawnroom"
                   "StartDisabled" "0"
                   "TeamNum" "0"
-                    "id" "${counter.count()}"
+                    "id" "${spawnName}"
                     ${block.vmf(counter, "TOOLS/TOOLSTRIGGER")}
                   editor
                   {
@@ -227,6 +238,8 @@ class SquareData{
                     "logicalpos" "[0 500]"
                   }
                 }      
+                
+                // this is the spawn poijnt
                             entity
                 {
                   "id" "${counter.count()}"
@@ -242,7 +255,38 @@ class SquareData{
                     "visgroupautoshown" "1"
                     "logicalpos" "[0 500]"
                   }
-                }`
+                }
+                
+                // now for the visualizer
+                entity
+                    {
+                      "id" "13"
+                      "classname" "func_respawnroomvisualizer"
+                      "disablereceiveshadows" "0"
+                      "disableshadows" "0"
+                      "InputFilter" "0"
+                      "origin" "0 0 96"
+                      "renderamt" "255"
+                      "rendercolor" "255 255 255"
+                      "renderfx" "0"
+                      "rendermode" "0"
+                      "respawnroomname" "${spawnName}"
+                      "solid_to_enemies" "1"
+                      "Solidity" "1"
+                      "spawnflags" "2"
+                      "StartDisabled" "0"
+                      "targetname" "door1"
+                      "vrad_brush_cast_shadows" "0"
+                      ${this.generateBlock(height, thickness, "almostfill").translate(length * this.xCoord, length * -this.yCoord, 0).vmf(counter, "OVERLAYS/NO_ENTRY")}
+                      editor
+                        {
+                            "color" "220 30 220"
+                            "visgroupshown" "1"
+                            "visgroupautoshown" "1"
+                            "logicalpos" "[0 500]"
+                          }
+                        }
+                `
         } // end of hasSpawn block
 
 

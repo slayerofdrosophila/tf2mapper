@@ -11,9 +11,7 @@ const mapper = new Mapper(1,1)
 mapper.rows[0][0].hasNorthWall = false
 mapper.rows[0][0].hasEastWall = false
 mapper.rows[0][0].hasNorthDoor = true
-mapper.rows[0][0].hasSouthDoor = true
-mapper.rows[0][0].hasEastDoor = true
-mapper.rows[0][0].hasWestDoor = true
+mapper.rows[0][0].hasSpawn = true
 
 appendFile("testdata1.vmf",mapper.vmf(), function (err){
     if (err) throw err;

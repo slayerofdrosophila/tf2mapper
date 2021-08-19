@@ -12,6 +12,7 @@ function App() {
     // collect square data and put into vmf
 
     const [mapper, setMapper] = useState(new Mapper(5,5))
+    const [started, setStarted] = useState(false)
 
     function handleUpdate(data:SquareData) {
         mapper.mirror(data.xCoord, data.yCoord)
@@ -65,7 +66,7 @@ function App() {
                             <li>Press an arrow key to place a wall there in that direction</li>
                             <li>Press S to place a spawn point (Left/up side is blue)</li>
                             <ul><li>Spawn points will face left-right towards the middle</li></ul>
-                            <li>Press SHIFT + an arrow key to place a shutter door there in that direction</li>
+                            <li>Press CTRL (any side) + an arrow key to place a shutter door there in that direction</li>
                             <li>HINT: Zoom out to fit the entire grid on your screen, if needed</li>
                         </ul>
                     </td>
@@ -77,4 +78,17 @@ function App() {
     );
 }
 
-export default App;
+function StartScreen(){
+    return(
+        <div>
+            <h3>Welcome to the Mallet easy TF2 map maker</h3>
+            <p>Create TF2 maps (KOTH only) with a simple, in-your-browser map editor!</p>
+
+            <form>
+                <input/>
+            </form>
+        </div>
+    )
+}
+
+export default App

@@ -9,6 +9,10 @@ import health_small from './assets/health_small.png';
 import deathpit from './assets/deathpit.png';
 import controlpoint from './assets/cp_neutral.png'
 import spawn_red from './assets/spawn_red.png'
+import door_north from './assets/door_north.png'
+import door_south from './assets/door_south.png'
+import door_east from './assets/door_east.png'
+import door_west from './assets/door_west.png'
 
 import './App.css';
 import {on} from "cluster";
@@ -61,27 +65,47 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         spawn_picture = <img className={"Overlay"} src={spawn_red}/>
     }
 
+    var door_north_pic = null
+    if (data.hasNorthDoor){
+        door_north_pic = <img className={"Overlay"} src={door_north}/>
+    }
+
+    var door_south_pic = null
+    if (data.hasSouthDoor){
+        door_south_pic = <img className={"Overlay"} src={door_south}/>
+    }
+
+    var door_east_pic = null
+    if (data.hasEastDoor){
+        door_east_pic = <img className={"Overlay"} src={door_east}/>
+    }
+
+    var door_west_pic = null
+    if (data.hasWestDoor){
+        door_west_pic = <img className={"Overlay"} src={door_west}/>
+    }
+
     function handleKeyUp(event: any){
         if (event.key === "ArrowUp"){
-            if (event.shiftKey){
+            if (event.ctrlKey){
                 data.hasNorthDoor = !data.hasNorthDoor
             } else{
                 data.hasNorthWall = !data.hasNorthWall
             }
         } else if (event.key === "ArrowDown"){
-            if (event.shiftKey){
+            if (event.ctrlKey){
                 data.hasSouthDoor = !data.hasSouthDoor
             } else{
                 data.hasSouthWall = !data.hasSouthWall
             }
         } else if (event.key === "ArrowRight"){
-            if (event.shiftKey){
+            if (event.ctrlKey){
                 data.hasEastDoor = !data.hasEastDoor
             } else{
                 data.hasEastWall = !data.hasEastWall
             }
         } else if(event.key === "ArrowLeft"){
-            if (event.shiftKey){
+            if (event.ctrlKey){
                 data.hasWestDoor = !data.hasWestWall
             } else{
                 data.hasWestWall = !data.hasWestWall
@@ -131,6 +155,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             {deathpit_picture}{point_picture}
             {wall_north_picture}{wall_south_picture}{wall_east_picture}{wall_west_picture}
             {health_picture}{spawn_picture}
+            {door_north_pic}{door_south_pic}{door_east_pic}{door_west_pic}
         </div>
     );
 }
