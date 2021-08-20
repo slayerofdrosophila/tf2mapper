@@ -70,6 +70,8 @@ function App() {
                             <ul><li>Only tested with 1 point</li></ul>
                             <li>HINT: Zoom out to fit the entire grid on your screen, if needed</li>
                         </ul>
+                        <br/> <p>check out the project: <a href={"https://github.com/slayerofdrosophila/tf2mapper"}>github.com/slayerofdrosophila/tf2mapper </a>
+                    </p>
                     </td>
                 </tbody>
             </table>
