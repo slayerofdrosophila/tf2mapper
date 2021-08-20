@@ -259,8 +259,9 @@ class SquareData{
                   "id" "${counter.count()}"
                   "classname" "func_respawnroom"
                   "StartDisabled" "0"
+                  "targetname" "${spawnName}"
                   "TeamNum" "0"
-                    "id" "${spawnName}"
+                    "id" "${counter.count()}"
                     ${block.vmf(counter, "TOOLS/TOOLSTRIGGER")}
                   editor
                   {
@@ -292,7 +293,7 @@ class SquareData{
                 // now for the visualizer
                 entity
                     {
-                      "id" "13"
+                      "id" "${counter.count()}"
                       "classname" "func_respawnroomvisualizer"
                       "disablereceiveshadows" "0"
                       "disableshadows" "0"
@@ -307,7 +308,7 @@ class SquareData{
                       "Solidity" "1"
                       "spawnflags" "2"
                       "StartDisabled" "0"
-                      "targetname" "door1"
+                      "targetname" "${counter.count()}"
                       "vrad_brush_cast_shadows" "0"
                       ${this.translate(this.generateBlock(height, thickness, "almostfill")).vmf(counter, "OVERLAYS/NO_ENTRY")}
                       editor
