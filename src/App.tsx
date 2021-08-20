@@ -73,6 +73,17 @@ function App() {
                             <li>Putting a health and ammo on the same square works, but will put them on top of each other</li></ul>
                             <li>HINT: Zoom out to fit the entire grid on your screen, if needed</li>
                         </ul>
+
+                        <p>Pro mapper tips</p>
+                        <ul>
+                            <li>Seal off the entire inside of your map with walls</li>
+                            <ul><li>If you don't do this, the map won't work</li></ul>
+                            <li>Doors take up the entire face of a wall</li>
+                            <ul><li>If you make them intersect with a wall at the corner, it will still work, but will look bad</li></ul>
+                            <li>You can place multiple spawns to create a large spawn room</li>
+                            <ul><li>Each will have its own resupply cabinet, though</li></ul>
+                            <li>Doors placed inside the same tile as a spawn room will only be usable by the team that owns the spawn</li>
+                        </ul>
                         <br/> <p>check out the project: <a href={"https://github.com/slayerofdrosophila/tf2mapper"}>github.com/slayerofdrosophila/tf2mapper (Good luck)</a>
                     </p>
                     </td>
