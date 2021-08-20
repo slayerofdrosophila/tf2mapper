@@ -6,6 +6,8 @@ import wall_west from './assets/wall_west.png';
 import wall_south from './assets/wall_south.png';
 import wall_east from './assets/wall_east.png';
 import health_small from './assets/health_small.png';
+import health_medium from './assets/health_medium.png'
+import ammo_medium from './assets/ammo_medium.png'
 import deathpit from './assets/deathpit.png';
 import controlpoint from './assets/cp_neutral.png'
 import spawn_red from './assets/spawn_red.png'
@@ -47,7 +49,12 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
 
     var health_picture = null
     if (data.hasHealth){
-        health_picture = <img className={"Overlay"} src={health_small}/>
+        health_picture = <img className={"Overlay"} src={health_medium}/>
+    }
+
+    var ammo_medium_pic = null
+    if (data.hasAmmoMedium){
+        ammo_medium_pic = <img className={"Overlay"} src={ammo_medium}/>
     }
 
     var deathpit_picture = null
@@ -114,7 +121,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             if (data.hasHealth) {
                 data.hasHealth = false
             } else{
-                data.hasEastWall = true
+                data.hasHealth = true
             }
         } else if (event.key === "p"){
             if (data.hasPit) {
@@ -131,6 +138,10 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         } else if (event.key === "s"){
             data.hasSpawn = !data.hasSpawn
         }
+        else if(event.key === "a"){
+            data.hasAmmoMedium = !data.hasAmmoMedium
+        }
+
         props.handleUpdate(data)
         // setData({...data}) // this updates the state, very importatnt
     }
@@ -154,7 +165,8 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             <img src={square} />
             {deathpit_picture}{point_picture}
             {wall_north_picture}{wall_south_picture}{wall_east_picture}{wall_west_picture}
-            {health_picture}{spawn_picture}
+            {spawn_picture}
+            {health_picture}{ammo_medium_pic}
             {door_north_pic}{door_south_pic}{door_east_pic}{door_west_pic}
         </span>
     );

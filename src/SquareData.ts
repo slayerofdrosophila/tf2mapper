@@ -4,6 +4,7 @@ import {spawn} from "child_process";
 
 const length = 256
 const height = 256
+const thickness = 32
 
 class SquareData{
 
@@ -19,6 +20,8 @@ class SquareData{
     hasSky: boolean = true
 
     hasHealth: boolean = false
+    hasAmmoMedium: boolean = false
+
     hasPit: boolean = false
     hasPoint: boolean = false
     hasSpawn: boolean = false
@@ -41,6 +44,8 @@ class SquareData{
         this.hasWestWall = other.hasEastWall
 
         this.hasHealth = other.hasHealth
+        this.hasAmmoMedium = other.hasAmmoMedium
+
         this.hasPit = other.hasPit
         this.hasPoint = other.hasPoint
         this.hasFloor = other.hasFloor
@@ -67,6 +72,8 @@ class SquareData{
         newsq.hasWestWall = this.hasWestWall
 
         newsq.hasHealth = this.hasHealth
+        newsq.hasAmmoMedium = this.hasAmmoMedium
+
         newsq.hasPit = this.hasPit
         newsq.hasPoint = this.hasPoint
         newsq.hasFloor = this.hasFloor
@@ -181,8 +188,6 @@ class SquareData{
 
     generateSolidsVmf(counter: Counter){
 
-        const thickness = 32
-
         var walls = []
 
         if (this.hasWestWall ){
@@ -219,7 +224,6 @@ class SquareData{
     }
 
     generateEntitiesVmf(counter: Counter) {
-        const thickness = 32
 
         var returnString = ""
 
@@ -383,10 +387,7 @@ class SquareData{
                 `
         } // end of hasSpawn block
 
-
-
         if (this.hasNorthDoor || this.hasSouthDoor || this.hasWestDoor || this.hasEastDoor){ // if has any doors?
-            // make: door
 
             const doorOrigin = new Point(length/2, -length/2, thickness)
             doorOrigin.translate(length * this.xCoord, length * -this.yCoord, height/2) // move door to the right square's corner
@@ -756,16 +757,48 @@ class SquareData{
             `
         }
 
+        if (this.hasHealth){
+            returnString += this.createPickup("healthkit_medium", counter)
+        }
+        if (this.hasAmmoMedium){
+            returnString += this.createPickup("ammopack_medium", counter)
+        }
+
         return returnString
     }
 
+    createPickup(type: string, counter: Counter){
+        // types: healthkit/ammopack small/medium/full
+        const center = new Point(this.xCoord * length + (length/2), (-this.yCoord* length - (length/2)), thickness)
+        return(`
+        entity
+        {
+        "id" "${counter.count()}"
+        "classname" "item_${type}"
+        "angles" "0 0 0"
+        "AutoMaterialize" "1"
+        "fademaxdist" "0"
+        "fademindist" "-1"
+        "StartDisabled" "0"
+        "TeamNum" "0"
+        "origin" "${center.pointsvmf()}"
+        editor
+        {
+        "color" "0 0 200"
+        "visgroupshown" "1"
+        "visgroupautoshown" "1"
+        "logicalpos" "[0 500]"
+        }
+        }`)
+    }
+
+    // i dont think this is used
     createDoor(counter: Counter, direction: string, height: number, length: number, thickness: number){
         if (direction == "north"){
             const doorOrigin = new Point(length/2, -length/2, thickness)
             doorOrigin.translate(length * this.xCoord, length * -this.yCoord, height/2)
             const doorBlock = this.generateBlock(height, thickness / 2, "north")
         }
-
     }
 }
 
