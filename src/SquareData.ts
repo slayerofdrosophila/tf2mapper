@@ -6,6 +6,7 @@ class SquareData{
 
     xCoord = -1
     yCoord = -1
+    zCoord = 0
 
     hasNorthWall: boolean = false
     hasSouthWall: boolean = false
@@ -74,8 +75,6 @@ class SquareData{
         newsq.hasSouthDoor = this.hasSouthDoor
         newsq.hasEastDoor = this.hasEastDoor
         newsq.hasWestDoor = this.hasWestDoor
-
-
 
         return newsq
     }
@@ -459,6 +458,208 @@ class SquareData{
 
         } // end of hasNorthDoor block
 
+        if (this.hasPoint){
+            // 1st is the block, then the other stuff
+
+            const center = new Point(this.xCoord*length + length/2, -this.yCoord*length -length/2, this.zCoord*length + thickness)
+
+            returnString += `
+            entity
+                {
+                "id" "${counter.count()}"
+                "classname" "trigger_capture_area"
+                "area_cap_point" "cp_koth"
+                "area_time_to_cap" "10"
+                "StartDisabled" "0"
+                "team_cancap_2" "1"
+                "team_cancap_3" "1"
+                "team_numcap_2" "1"
+                "team_numcap_3" "1"
+                "team_spawn_2" "0"
+                "team_spawn_3" "0"
+                "team_startcap_2" "1"
+                "team_startcap_3" "1"
+                connections
+                {
+                "OnCapTeam1" "cp_koth_prop,Skin,1,0,-1"
+                "OnCapTeam2" "cp_koth_prop,Skin,2,0,-1"
+                "OnCapTeam1" "koth_gamerules,SetRedKothClockActive,,0,-1"
+                "OnCapTeam2" "koth_gamerules,SetBlueKothClockActive,,0,-1"
+                "OnCapTeam1" "koth_gamerules,SetRedTeamRespawnWaveTime,8,0,-1"
+                "OnCapTeam1" "koth_gamerules,SetBlueTeamRespawnWaveTime,4,0,-1"
+                "OnCapTeam2" "koth_gamerules,SetRedTeamRespawnWaveTime,4,0,-1"
+                "OnCapTeam2" "koth_gamerules,SetBlueTeamRespawnWaveTime,8,0,-1"
+                }
+                ${this.generateBlock(height, thickness, "almostfill").translate(length * this.xCoord, length * -this.yCoord, 0).vmf(counter, "TOOLS/TOOLSTRIGGER")}
+                editor
+                {
+                "color" "220 30 220"
+                // comment
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 1000]"
+                }
+                }
+                
+                // now for the other random stuff
+                
+                entity
+                {
+                "id" "${counter.count()}"
+                "classname" "tf_gamerules"
+                "ctf_overtime" "1"
+                "hud_type" "0"
+                "targetname" "koth_gamerules"
+                "origin" "${center.pointsvmf()}"
+                editor
+                {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 500]"
+                }
+                }
+                
+                entity
+                {
+                "id" "${counter.count()}"
+                "classname" "logic_auto"
+                "spawnflags" "1"
+                connections
+                {
+                "OnMultiNewRound" "koth_gamerules,SetRedTeamRespawnWaveTime,6,0,-1"
+                "OnMultiNewRound" "koth_gamerules,SetBlueTeamRespawnWaveTime,6,0,-1"
+                "OnMultiNewRound" "koth_gamerules,SetRedTeamGoalString,#KOTH_SETUP_GOAL,0,-1"
+                "OnMultiNewRound" "koth_gamerules,SetBlueTeamGoalString,#KOTH_SETUP_GOAL,0,-1"
+                }
+                "origin" "${center.pointsvmf()}"
+                editor
+                {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 500]"
+                }
+                }
+                
+                entity
+                {
+                "id" "${counter.count()}"
+                "classname" "tf_logic_koth"
+                "timer_length" "180"
+                "unlock_point" "30"
+                "origin" "${center.pointsvmf()}"
+                editor
+                {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 500]"
+                }
+                }
+                
+                entity
+                {
+                "id" "${counter.count()}"
+                "classname" "team_control_point_master"
+                "cpm_restrict_team_cap_win" "0"
+                "custom_position_x" "-1"
+                "custom_position_y" "-1"
+                "partial_cap_points_rate" "0"
+                "play_all_rounds" "0"
+                "score_style" "0"
+                "StartDisabled" "0"
+                "switch_teams" "0"
+                "team_base_icon_2" "sprites/obj_icons/icon_base_red"
+                "team_base_icon_3" "sprites/obj_icons/icon_base_blu"
+                "origin" "${center.pointsvmf()}"
+                editor
+                {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 500]"
+                }
+                }
+                entity
+                {
+                "id" "${counter.count()}"
+                "classname" "prop_dynamic"
+                "angles" "0 0 0"
+                "DisableBoneFollowers" "0"
+                "disablereceiveshadows" "0"
+                "disableshadows" "0"
+                "ExplodeDamage" "0"
+                "ExplodeRadius" "0"
+                "fademaxdist" "0"
+                "fademindist" "-1"
+                "fadescale" "1"
+                "MaxAnimTime" "10"
+                "maxdxlevel" "0"
+                "MinAnimTime" "5"
+                "mindxlevel" "0"
+                "model" "models/props_gameplay/cap_point_base.mdl"
+                "modelscale" "1.0"
+                "PerformanceMode" "0"
+                "pressuredelay" "0"
+                "RandomAnimation" "0"
+                "renderamt" "255"
+                "rendercolor" "255 255 255"
+                "renderfx" "0"
+                "rendermode" "0"
+                "SetBodyGroup" "0"
+                "skin" "0"
+                "solid" "6"
+                "spawnflags" "0"
+                "StartDisabled" "0"
+                "targetname" "cp_koth_prop"
+                "origin" "${center.pointsvmf()}"
+                editor
+                {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 500]"
+                }
+                }
+                entity
+                {
+                "id" "${counter.count()}"
+                "classname" "team_control_point"
+                "angles" "0 0 0"
+                "point_default_owner" "0"
+                "point_group" "0"
+                "point_index" "0"
+                "point_printname" "Control Point"
+                "point_start_locked" "0"
+                "point_warn_on_cap" "0"
+                "point_warn_sound" "ControlPoint.CaptureWarn"
+                "random_owner_on_restart" "0"
+                "spawnflags" "0"
+                "StartDisabled" "0"
+                "targetname" "cp_koth"
+                "team_bodygroup_0" "3"
+                "team_bodygroup_2" "1"
+                "team_bodygroup_3" "1"
+                "team_icon_0" "sprites/obj_icons/icon_obj_neutral"
+                "team_icon_2" "sprites/obj_icons/icon_obj_red"
+                "team_icon_3" "sprites/obj_icons/icon_obj_blu"
+                "team_model_0" "models/effects/cappoint_hologram.mdl"
+                "team_model_2" "models/effects/cappoint_hologram.mdl"
+                "team_model_3" "models/effects/cappoint_hologram.mdl"
+                "team_timedpoints_2" "0"
+                "team_timedpoints_3" "0"
+                "origin" "${center.pointsvmf()}"
+                editor
+                {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 500]"
+                }
+                }
+            `
+        }
 
         return returnString
     }

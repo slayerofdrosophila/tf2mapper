@@ -23,7 +23,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     // const [data, setData] = useState(props.data)
     const data = props.data
 
-    var myDiv:HTMLDivElement|null;
+    var myDiv:HTMLSpanElement|null;
 
     var wall_north_picture = null
     if (data.hasNorthWall){
@@ -145,7 +145,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     }
 
     return (
-        <div className="Square"
+        <span className="Square"
              onKeyUp={handleKeyUp} // this is only called when this div element has focus
              tabIndex={0} // this is needed to make div element "focusable"
              ref={assignReference} // this is needed to get the div element so that we can call focus on it
@@ -156,7 +156,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             {wall_north_picture}{wall_south_picture}{wall_east_picture}{wall_west_picture}
             {health_picture}{spawn_picture}
             {door_north_pic}{door_south_pic}{door_east_pic}{door_west_pic}
-        </div>
+        </span>
     );
 }
 
