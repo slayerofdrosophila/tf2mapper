@@ -208,4 +208,5 @@ cordon
 `)
 }
 
-export {Point, Side, Block, mapVmf}
+const originPoint = new Point(0,0,0)
+export {Point, Side, Block, mapVmf, originPoint}

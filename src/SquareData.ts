@@ -1,6 +1,9 @@
-import {Block, Point, Side} from "./Geometry";
+import {Block, originPoint, Point, Side} from "./Geometry";
 import {Counter} from "./Mapper";
+import {spawn} from "child_process";
 
+const length = 256
+const height = 256
 
 class SquareData{
 
@@ -79,19 +82,23 @@ class SquareData{
         return newsq
     }
 
+    translate(item: Block){
+        return item.translate(length * this.xCoord, length * -this.yCoord, 0)
+    }
+    translatePoint(item: Point){
+        return item.translate(length * this.xCoord, length * -this.yCoord, 0)
+    }
+
     // move this to a more appropriate class later! like Side or something
     generateBlock(height: number, thickness: number, direction: string){
-        const origin = new Point(0,0,0)
+
         const up = [0,0,height]
         const floorup = [0,0,thickness]
-
-        const length = 256
-
 
         if (direction == "west" ){
             const right = new Point(thickness,0,0)
             const backward = new Point(0, -length, 0)
-            const side = new Side(right, origin, backward)
+            const side = new Side(right, originPoint, backward)
 
             const wall = new Block(side, up)
             return wall
@@ -99,7 +106,7 @@ class SquareData{
         if (direction == "east"){
             const right = new Point(thickness,0,0)
             const backward = new Point(0, -length, 0)
-            const side = new Side(right, origin, backward)
+            const side = new Side(right, originPoint, backward)
 
             const wall = new Block(side, up)
             wall.translate(length - thickness,0,0)
@@ -108,7 +115,7 @@ class SquareData{
         if (direction == "north"){
             const down = new Point(-0,-thickness,0)
             const right = new Point(length, 0, 0)
-            const side = new Side(right, origin, down)
+            const side = new Side(right, originPoint, down)
 
             const wall = new Block(side, up)
             return wall
@@ -116,7 +123,7 @@ class SquareData{
         if (direction == "south"){ // this is up n down wall
             const down = new Point(-0,-thickness,0)
             const right = new Point(length, 0, 0)
-            const side = new Side(right, origin, down)
+            const side = new Side(right, originPoint, down)
 
             const wall = new Block(side, up)
             wall.translate(0,-length + thickness,0)
@@ -125,7 +132,7 @@ class SquareData{
         if (direction == "floor"){ // this is up n down wall
             const down = new Point(-0,-length,0)
             const right = new Point(length, 0, 0)
-            const side = new Side(right, origin, down)
+            const side = new Side(right, originPoint, down)
 
             const wall = new Block(side, floorup)
             return wall
@@ -133,7 +140,7 @@ class SquareData{
         if (direction == "sky" || direction == "ceiling"){ // this is up n down wall
             const down = new Point(-0,-length,0)
             const right = new Point(length, 0, 0)
-            const side = new Side(right, origin, down)
+            const side = new Side(right, originPoint, down)
 
             const wall = new Block(side, floorup)
             wall.translate(0,0,height - thickness)
@@ -148,6 +155,25 @@ class SquareData{
 
             return wall
         }
+        if (direction == "westcabinet"){
+            const right = new Point(thickness,0,0)
+            const backward = new Point(0, -height, 0)
+            const side = new Side(right, originPoint, backward)
+
+            const wall = new Block(side, up)
+            wall.translate(0,0,thickness)
+            return wall
+        }
+        if (direction == "eastcabinet"){
+            const right = new Point(thickness,0,0)
+            const backward = new Point(0, -height, 0)
+            const side = new Side(right, originPoint, backward)
+
+            const wall = new Block(side, up)
+            wall.translate(length - thickness,-length + thickness*1.5,thickness)
+            return wall
+        }
+
         throw new Error("Invalid block direction: " + direction);
 
 
@@ -156,9 +182,6 @@ class SquareData{
     generateSolidsVmf(counter: Counter){
 
         const thickness = 32
-        const height = 256
-        const length = 256
-
 
         var walls = []
 
@@ -197,8 +220,6 @@ class SquareData{
 
     generateEntitiesVmf(counter: Counter) {
         const thickness = 32
-        const height = 256
-        const length = 256
 
         var returnString = ""
 
@@ -214,6 +235,18 @@ class SquareData{
             spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 16)
 
             const spawnName = "spawn" + counter.count()
+
+            const resupName = "resupply" + counter.count()
+
+            let cabinetDisp: [number,number,number] = [16,-48,thickness]
+            if (this.spawnTeam == 2){
+                cabinetDisp = [length-16,-length+48,thickness]
+            }
+
+            let cabinetDirection = "westcabinet"
+            if (this.spawnTeam == 2){
+                cabinetDirection = "eastcabinet"
+            }
 
             let spawnAngles = "0 0 0" // this faces east
             if (this.spawnTeam == 2){
@@ -276,7 +309,7 @@ class SquareData{
                       "StartDisabled" "0"
                       "targetname" "door1"
                       "vrad_brush_cast_shadows" "0"
-                      ${this.generateBlock(height, thickness, "almostfill").translate(length * this.xCoord, length * -this.yCoord, 0).vmf(counter, "OVERLAYS/NO_ENTRY")}
+                      ${this.translate(this.generateBlock(height, thickness, "almostfill")).vmf(counter, "OVERLAYS/NO_ENTRY")}
                       editor
                         {
                             "color" "220 30 220"
@@ -284,6 +317,67 @@ class SquareData{
                             "visgroupautoshown" "1"
                             "logicalpos" "[0 500]"
                           }
+                        }
+                        
+                        // now for the cabinet
+                        // this is locker
+                        entity
+                        {
+                        "id" "${counter.count()}"
+                        "classname" "prop_dynamic"
+                        "angles" "${spawnAngles}"
+                        "DisableBoneFollowers" "0"
+                        "disablereceiveshadows" "0"
+                        "disableshadows" "0"
+                        "ExplodeDamage" "0"
+                        "ExplodeRadius" "0"
+                        "fademaxdist" "0"
+                        "fademindist" "-1"
+                        "fadescale" "1"
+                        "MaxAnimTime" "10"
+                        "maxdxlevel" "0"
+                        "MinAnimTime" "5"
+                        "mindxlevel" "0"
+                        "model" "models/props_gameplay/resupply_locker.mdl"
+                        "modelscale" "1.0"
+                        "PerformanceMode" "0"
+                        "pressuredelay" "0"
+                        "RandomAnimation" "0"
+                        "renderamt" "255"
+                        "rendercolor" "255 255 255"
+                        "renderfx" "0"
+                        "rendermode" "0"
+                        "SetBodyGroup" "0"
+                        "skin" "0"
+                        "solid" "6"
+                        "spawnflags" "0"
+                        "targetname" "${resupName}"
+                        "origin" "${this.translatePoint(originPoint.clone()).translate(...cabinetDisp).pointsvmf()}"
+                        editor
+                        {
+                        "color" "220 30 220"
+                        "visgroupshown" "1"
+                        "visgroupautoshown" "1"
+                        "logicalpos" "[0 0]"
+                        }
+                        }
+                        
+                        // for the regen volume
+                        entity
+                        {
+                        "id" "${counter.count()}"
+                        "classname" "func_regenerate"
+                        "associatedmodel" "${resupName}"
+                        "StartDisabled" "0"
+                        "TeamNum" "0"
+                        ${this.translate(this.generateBlock(96, 64, cabinetDirection)).vmf(counter, "TOOLS/TOOLSTRIGGER")}
+                        editor
+                        {
+                        "color" "220 30 220"
+                        "visgroupshown" "1"
+                        "visgroupautoshown" "1"
+                        "logicalpos" "[0 1500]"
+                        }
                         }
                 `
         } // end of hasSpawn block
