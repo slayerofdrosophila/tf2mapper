@@ -144,6 +144,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
 
         props.handleUpdate(data)
         // setData({...data}) // this updates the state, very importatnt
+
     }
 
     function handleMouseEnter() {
@@ -158,6 +159,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     return (
         <span className="Square"
              onKeyUp={handleKeyUp} // this is only called when this div element has focus
+            onKeyPress={e => e.preventDefault()}
              tabIndex={0} // this is needed to make div element "focusable"
              ref={assignReference} // this is needed to get the div element so that we can call focus on it
              onMouseEnter={handleMouseEnter} // this is to call focus on div when mouse enters

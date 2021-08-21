@@ -11,15 +11,29 @@ function App() {
     // generate table from dimensions?
     // collect square data and put into vmf
 
-    const [mapper, setMapper] = useState(new Mapper(11,7))
+    const [mapper, setMapper] = useState(new Mapper(11,7, 10))
     const [started, setStarted] = useState(false)
 
     function handleUpdate(data:SquareData) {
-        mapper.mirror(data.xCoord, data.yCoord)
+        mapper.mirror(data.xCoord, data.yCoord, data.zCoord)
         setMapper(mapper.clone())
     }
+    //
+    // var floors = mapper.floors
+    // const display = floors.map(floor => {
+    //     floor.map(row => {
+    //         var squares: any[] = []
+    //         for (const square in row) {
+    //             squares.push(<td><Square data={row[square]} handleUpdate={handleUpdate}/></td>)
+    //         }
+    //         return (<tr>{squares}</tr>)
+    //     })
+    // })
 
-    var rows = mapper.rows
+    var floors = mapper.floors
+    var rows = floors[4]
+
+    // var rows = mapper.rows
     const grid = rows.map(row => {
         var squares: any[] = []
             for (const square in row) {
@@ -45,6 +59,7 @@ function App() {
 
     }
 
+    // problem: it can
     return (
         <div>
             <table>
@@ -52,7 +67,7 @@ function App() {
                 <td>
                     <table style={{borderSpacing: "0px", borderCollapse: "separate"}}>
                         <tbody>
-                        {grid}
+                            {grid}
                         </tbody>
 
                     </table>

@@ -6,34 +6,43 @@ class Mapper{
 
     mapWidth: number
     mapHeight: number
+    mapFloors: number
 
     rows: SquareData[][] = [] // this contains row arrays
 
-    constructor(width: number, height: number) {
+    floors: SquareData[][][] = [] // THIS now contains everything
+
+    constructor(width: number, height: number, levels: number) {
         this.mapWidth = width
         this.mapHeight = height
+        this.mapFloors = levels
 
-        this.rows = [] // this contains row arrays
+        this.floors = [] // this contains row arrays
 
-        for (var y = 0; y < this.mapHeight; y++){
-            var newrow: SquareData[] = []
-            for (var x = 0; x < this.mapWidth; x++){
-                var data = new SquareData(x,y)
-                newrow[x] = data
+        for (var z = 0; z < this.mapFloors; z++){
+            var newfloor: SquareData[][] = []
+            for (var y = 0; y < this.mapHeight; y++){
+                var newrow: SquareData[] = []
+                for (var x = 0; x < this.mapWidth; x++){
+                    var data = new SquareData(x,y,z)
+                    newrow[x] = data
+                }
+                newfloor[y] = newrow
             }
-            (this.rows)[y] = newrow
+            this.floors[z] = newfloor
         }
+
     }
 
     clone():Mapper {
-        const newmapper = new Mapper(this.mapWidth, this.mapHeight)
-        newmapper.rows = this.rows.map(row => row.map(square => square.clone()))
+        const newmapper = new Mapper(this.mapWidth, this.mapHeight, this.mapFloors)
+        newmapper.floors = this.floors.map(floor => floor.map(row => row.map(square => square.clone())))
         return newmapper;
     }
 
-    mirror(x: number,y: number) {
+    mirror(x: number,y: number, z: number) {
         console.log(x,y,this.mapWidth,this.mapHeight )
-        this.rows[this.mapHeight -1 - y][this.mapWidth -1 - x].mirrorValues(this.rows[y][x])
+        this.floors[z][this.mapHeight -1 - y][this.mapWidth -1 - x].mirrorValues(this.floors[z][y][x])
     }
 
     vmf(){
@@ -41,18 +50,21 @@ class Mapper{
         const counter = new Counter()
 
         var worldString = ""
-
-        for (let i = 0; i < this.mapHeight; i++){
-            for (let p = 0; p < this.mapWidth; p++){
-                let squareVmf = this.rows[i][p].generateSolidsVmf(counter)
-                worldString += squareVmf
+        for (let z = 0; z < this.mapHeight; z++){
+            for (let i = 0; i < this.mapHeight; i++){
+                for (let p = 0; p < this.mapWidth; p++){
+                    let squareVmf = this.floors[z][i][p].generateSolidsVmf(counter)
+                    worldString += squareVmf
+                }
             }
         }
         var entitiesString = ""
-        for (let i = 0; i < this.mapHeight; i++){
-            for (let p = 0; p < this.mapWidth; p++){
-                let squareVmf = this.rows[i][p].generateEntitiesVmf(counter)
-                entitiesString += squareVmf
+        for (let z = 0; z < this.mapHeight; z++){
+            for (let i = 0; i < this.mapHeight; i++){
+                for (let p = 0; p < this.mapWidth; p++){
+                    let squareVmf = this.floors[z][i][p].generateEntitiesVmf(counter)
+                    entitiesString += squareVmf
+                }
             }
         }
         const returnString = mapVmf(worldString, entitiesString)
