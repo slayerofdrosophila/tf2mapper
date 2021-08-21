@@ -1,6 +1,7 @@
 import React from 'react';
 
 import square from './assets/square_blank.png';
+import floor from './assets/floor.png'
 import wall_north from './assets/wall_north.png';
 import wall_west from './assets/wall_west.png';
 import wall_south from './assets/wall_south.png';
@@ -16,6 +17,7 @@ import door_south from './assets/door_south.png'
 import door_east from './assets/door_east.png'
 import door_west from './assets/door_west.png'
 
+
 import './App.css';
 import {on} from "cluster";
 import {SquareData} from "./SquareData";
@@ -26,6 +28,11 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     const data = props.data
 
     var myDiv:HTMLSpanElement|null;
+
+    var no_floor_pic = null
+    if (!data.hasFloor){
+        no_floor_pic = <img className={"Overlay"} src={floor}/>
+    }
 
     var wall_north_picture = null
     if (data.hasNorthWall){
@@ -124,11 +131,11 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
                 data.hasHealth = true
             }
         } else if (event.key === "p"){
-            if (data.hasPit) {
-                data.hasPit = false
-            } else{
-                data.hasPit = true
-            }
+            // if (data.hasPit) {
+            //     data.hasPit = false
+            // } else{
+            //     data.hasPit = true
+            // }
         } else if (event.key === "c"){
             if (data.hasPoint) {
                 data.hasPoint = false
@@ -140,6 +147,8 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         }
         else if(event.key === "a"){
             data.hasAmmoMedium = !data.hasAmmoMedium
+        } else if(event.key === " "){
+            data.hasFloor = !data.hasFloor
         }
 
         props.handleUpdate(data)
@@ -165,7 +174,9 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
              onMouseEnter={handleMouseEnter} // this is to call focus on div when mouse enters
         >
             <img src={square} />
-            {deathpit_picture}{point_picture}
+            {deathpit_picture}
+            {no_floor_pic}
+            {point_picture}
             {wall_north_picture}{wall_south_picture}{wall_east_picture}{wall_west_picture}
             {spawn_picture}
             {health_picture}{ammo_medium_pic}

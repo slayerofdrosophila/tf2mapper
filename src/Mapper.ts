@@ -12,19 +12,26 @@ class Mapper{
 
     floors: SquareData[][][] = [] // THIS now contains everything
 
+    topFloor: number
+
     constructor(width: number, height: number, levels: number) {
         this.mapWidth = width
         this.mapHeight = height
         this.mapFloors = levels
 
         this.floors = [] // this contains row arrays
+        this.topFloor = 0
 
         for (var z = 0; z < this.mapFloors; z++){
             var newfloor: SquareData[][] = []
+            let lastFloor = false
+            if (z == this.mapFloors - 1){
+                lastFloor = true
+            }
             for (var y = 0; y < this.mapHeight; y++){
                 var newrow: SquareData[] = []
                 for (var x = 0; x < this.mapWidth; x++){
-                    var data = new SquareData(x,y,z)
+                    var data = new SquareData(x,y,z,lastFloor)
                     newrow[x] = data
                 }
                 newfloor[y] = newrow
@@ -37,6 +44,7 @@ class Mapper{
     clone():Mapper {
         const newmapper = new Mapper(this.mapWidth, this.mapHeight, this.mapFloors)
         newmapper.floors = this.floors.map(floor => floor.map(row => row.map(square => square.clone())))
+        newmapper.topFloor = this.topFloor
         return newmapper;
     }
 
@@ -50,7 +58,7 @@ class Mapper{
         const counter = new Counter()
 
         var worldString = ""
-        for (let z = 0; z < this.mapHeight; z++){
+        for (let z = 0; z < this.mapFloors; z++){
             for (let i = 0; i < this.mapHeight; i++){
                 for (let p = 0; p < this.mapWidth; p++){
                     let squareVmf = this.floors[z][i][p].generateSolidsVmf(counter)
@@ -58,8 +66,10 @@ class Mapper{
                 }
             }
         }
+        worldString += this.floors[this.topFloor][this.mapHeight - 1][this.mapWidth - 1].generateCeiling().vmf(counter, "DEV/REFLECTIVITY_50") // default texture
+
         var entitiesString = ""
-        for (let z = 0; z < this.mapHeight; z++){
+        for (let z = 0; z < this.mapFloors; z++){
             for (let i = 0; i < this.mapHeight; i++){
                 for (let p = 0; p < this.mapWidth; p++){
                     let squareVmf = this.floors[z][i][p].generateEntitiesVmf(counter)

@@ -16,7 +16,7 @@ class SquareData{
     hasSouthWall: boolean = false
     hasEastWall: boolean = false
     hasWestWall: boolean = false
-    hasFloor: boolean = true
+    hasFloor: boolean = false // nothing has floors by default except for ground one
     hasSky: boolean = false // probably obsoleted now, except for top floor I guess
 
     hasHealth: boolean = false
@@ -33,10 +33,17 @@ class SquareData{
 
     spawnTeam: number = 2 // 3 = BLU; 2 = RED
 
-    constructor(x: number,y: number, z: number) {
+    constructor(x: number,y: number, z: number, hasSky = false) {
         this.yCoord = y
         this.xCoord = x
         this.zCoord = z
+
+        this.hasSky = hasSky
+
+        if (z === 0){
+            this.hasFloor = true
+        }
+
     }
     mirrorValues(other:SquareData) {
         this.hasNorthWall = other.hasSouthWall
@@ -800,6 +807,27 @@ class SquareData{
             doorOrigin.translate(length * this.xCoord, length * -this.yCoord, height/2 + this.zCoord*length)
             const doorBlock = this.generateBlock(height, thickness / 2, "north")
         }
+    }
+
+    hasCeiling = false
+    generateCeiling() {
+        // const down = new Point((this.xCoord + 1) * length,0, this.zCoord * length)
+        const originCeiling = new Point(0,0,0)
+        // const right = new Point(0,(-this.yCoord - 1) * length,this.zCoord * length)
+        //
+        // const ceilingBottom = new Side(down, originCeiling, right)
+        //
+        // const ceilingBlock = new Block(ceilingBottom, [0,0,thickness])
+        //
+        // return ceilingBlock
+
+        const down = new Point(-0,-length * this.yCoord,0)
+        const right = new Point(length * this.xCoord, 0, 0)
+        const side = new Side(right, originCeiling, down)
+
+        const wall = new Block(side, [0,0,thickness])
+        wall.translate(0,0,(height * (this.zCoord + 1)) - thickness)
+        return wall
     }
 }
 

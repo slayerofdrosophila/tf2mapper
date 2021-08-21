@@ -13,12 +13,12 @@ beta version features:
 
 
 to be done before v1:
-* resupply cabinets
+* ~~resupply cabinets~~
 * lighting
-* pickups
+* ~~pickups~~
 * saws
 
 to be done before actual viable product:
-* multiple levels
+* ~~multiple levels~~
 * saving / loading
 * textures

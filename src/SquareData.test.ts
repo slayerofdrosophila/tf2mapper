@@ -6,7 +6,7 @@ import {Mapper} from "./Mapper";
 import "fs"
 import {appendFile} from "fs";
 
-const mapper = new Mapper(1,1)
+const mapper = new Mapper(1,1,1)
 
 mapper.rows[0][0].hasNorthWall = false
 mapper.rows[0][0].hasEastWall = false
@@ -18,8 +18,8 @@ appendFile("testdata1.vmf",mapper.vmf(), function (err){
     console.log("saved!!")
 })
 
-const sd = new SquareData(0,0)
-const sd2 = new SquareData(1,0)
+const sd = new SquareData(0,0,0)
+const sd2 = new SquareData(1,0,0)
 
 //  forward
 //  |
