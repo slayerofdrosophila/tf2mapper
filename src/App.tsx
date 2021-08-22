@@ -96,7 +96,6 @@ function App() {
                 </td>
                     <td>
                         <div>
-                            <p>Instructions</p>
                             <table>
                                 <thead>
                                 <th scope="col">Key</th>
@@ -110,6 +109,10 @@ function App() {
                                 <tr>
                                     <td>CTRL + Arrow</td>
                                     <td>Shutter Door</td>
+                                </tr>
+                                <tr>
+                                    <td>SHIFT + Arrow</td>
+                                    <td>Ramp to next floor (1:1)</td>
                                 </tr>
                                 <tr>
                                     <td>Space</td>

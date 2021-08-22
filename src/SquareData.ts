@@ -25,13 +25,19 @@ class SquareData{
     hasPit: boolean = false
     hasPoint: boolean = false
     hasSpawn: boolean = false
+    hasLight: boolean = false
 
     hasNorthDoor: boolean = false
     hasSouthDoor: boolean = false
     hasEastDoor: boolean = false
     hasWestDoor: boolean = false
+    
+    hasNorthRamp: boolean = false
+    hasSouthRamp: boolean = false
+    hasEastRamp: boolean = false
+    hasWestRamp: boolean = false
 
-    spawnTeam: number = 2 // 3 = BLU; 2 = RED
+    spawnTeam: number = 3 // 3 = BLU; 2 = RED
 
     constructor(x: number,y: number, z: number, hasSky = false) {
         this.yCoord = y
@@ -59,11 +65,17 @@ class SquareData{
         this.hasFloor = other.hasFloor
         this.hasSky = other.hasSky
         this.hasSpawn = other.hasSpawn
+        this.hasLight = other.hasLight
 
         this.hasNorthDoor = other.hasSouthDoor
         this.hasSouthDoor = other.hasNorthDoor
         this.hasEastDoor = other.hasWestDoor
         this.hasWestDoor = other.hasEastDoor
+
+        this.hasNorthRamp = other.hasSouthRamp
+        this.hasSouthRamp = other.hasNorthRamp
+        this.hasEastRamp = other.hasWestRamp
+        this.hasWestRamp = other.hasEastRamp
 
         if (this.spawnTeam == 2){
             other.spawnTeam = 3
@@ -88,11 +100,17 @@ class SquareData{
         newsq.hasSky = this.hasSky
         newsq.hasSpawn = this.hasSpawn
         newsq.spawnTeam = this.spawnTeam
+        newsq.hasLight = this.hasLight
 
         newsq.hasNorthDoor = this.hasNorthDoor
         newsq.hasSouthDoor = this.hasSouthDoor
         newsq.hasEastDoor = this.hasEastDoor
         newsq.hasWestDoor = this.hasWestDoor
+
+        newsq.hasNorthRamp = this.hasNorthRamp
+        newsq.hasSouthRamp = this.hasSouthRamp
+        newsq.hasEastRamp = this.hasEastRamp
+        newsq.hasWestRamp = this.hasWestRamp
 
         return newsq
     }
@@ -188,6 +206,42 @@ class SquareData{
             wall.translate(length - thickness,-length + thickness*1.5,thickness)
             return wall
         }
+        if (direction == "northramp"){ // this is ramp from south --> north
+            const down = new Point(-0,-thickness,0)
+            const right = new Point(length, 0, 0)
+            const side = new Side(right, originPoint, down)
+
+            const wall = new Block(side, [0, length, height])
+            wall.translate(0,-length + thickness, thickness)
+            return wall
+        }
+        if (direction == "southramp"){
+            const down = new Point(-0,-thickness,0)
+            const right = new Point(length, 0, 0)
+            const side = new Side(right, originPoint, down)
+
+            const wall = new Block(side, [0, -length, height])
+            wall.translate(0,0,thickness)
+            return wall
+        }
+        if (direction == "eastramp" ){
+            const right = new Point(thickness,0,0)
+            const backward = new Point(0, -length, 0)
+            const side = new Side(right, originPoint, backward)
+
+            const wall = new Block(side, [length, 0, height])
+            wall.translate(0,0,thickness)
+            return wall
+        }
+        if (direction == "westramp"){
+            const right = new Point(thickness,0,0)
+            const backward = new Point(0, -length, 0)
+            const side = new Side(right, originPoint, backward)
+
+            const wall = new Block(side, [-length, 0, height])
+            wall.translate(length - thickness,0,thickness)
+            return wall
+        }
 
         throw new Error("Invalid block direction: " + direction);
 
@@ -207,17 +261,33 @@ class SquareData{
         if (this.hasNorthWall){
             walls[0] = this.generateBlock(height, thickness, "north")
         }
-        if (this.hasSouthWall){ // this is up n down wall
+        if (this.hasSouthWall){
 
             walls[1] = this.generateBlock(height, thickness, "south")
         }
-        if (this.hasFloor){ // this is up n down wall
+        if (this.hasFloor){
 
             walls[4] = this.generateBlock(height, thickness, "floor")
         }
-        if (this.hasSky){ // this is up n down wall
+        if (this.hasSky){
 
             walls[5] = this.generateBlock(height, thickness, "sky")
+        }
+        if (this.hasNorthRamp){
+
+            walls[6] = this.generateBlock(height, thickness, "northramp")
+        }
+        if (this.hasSouthRamp){
+
+            walls[7] = this.generateBlock(height, thickness, "southramp")
+        }
+        if (this.hasEastRamp){
+
+            walls[8] = this.generateBlock(height, thickness, "eastramp")
+        }
+        if (this.hasWestRamp){
+
+            walls[9] = this.generateBlock(height, thickness, "westramp")
         }
 
         var bobby = ""
@@ -250,19 +320,19 @@ class SquareData{
 
             const resupName = "resupply" + counter.count()
 
-            let cabinetDisp: [number,number,number] = [16,-48,thickness]
+            let cabinetDisp: [number,number,number] = [length-16,-length+48,thickness]
             if (this.spawnTeam == 2){
-                cabinetDisp = [length-16,-length+48,thickness]
+                cabinetDisp = [16,-48,thickness]
             }
 
-            let cabinetDirection = "westcabinet"
+            let cabinetDirection = "eastcabinet"
             if (this.spawnTeam == 2){
-                cabinetDirection = "eastcabinet"
+                cabinetDirection = "westcabinet"
             }
 
-            let spawnAngles = "0 0 0" // this faces east
+            let spawnAngles = "0 180 0" // this faces east
             if (this.spawnTeam == 2){
-                spawnAngles = "0 180 0" // this faces west
+                spawnAngles = "0 0 0" // this faces west
             }
 
             returnString += `
@@ -771,6 +841,9 @@ class SquareData{
         if (this.hasAmmoMedium){
             returnString += this.createPickup("ammopack_medium", counter)
         }
+        if (this.hasFloor && this.zCoord > 0){
+            returnString += this.createLight(counter)
+        }
 
         return returnString
     }
@@ -799,6 +872,44 @@ class SquareData{
         }
         }`)
     }
+    
+    createLight(counter: Counter){
+
+        const lightSpot = new Point((this.xCoord * length) + (length/2), -(this.yCoord * length) - (length/2), (this.zCoord * height)-1)
+        
+        return(`
+            entity
+            {
+            "id" "${counter.count()}"
+            "classname" "light_spot"
+            "_cone" "60"
+            "_constant_attn" "0"
+            "_distance" "0"
+            "_exponent" "1"
+            "_fifty_percent_distance" "0"
+            "_hardfalloff" "0"
+            "_inner_cone" "30"
+            "_light" "255 255 255 1200"
+            "_lightHDR" "-1 -1 -1 1"
+            "_lightscaleHDR" "1"
+            "_linear_attn" "0"
+            "_quadratic_attn" "1"
+            "_zero_percent_distance" "0"
+            "angles" "0 0 0"
+            "pitch" "-90"
+            "spawnflags" "0"
+            "style" "0"
+            "origin" "${lightSpot.pointsvmf()}"
+            editor
+            {
+            "color" "220 30 220"
+            "visgroupshown" "1"
+            "visgroupautoshown" "1"
+            "logicalpos" "[0 4500]"
+            }
+            }
+            `)
+    }
 
     // i dont think this is used
     createDoor(counter: Counter, direction: string, height: number, length: number, thickness: number){
@@ -821,12 +932,12 @@ class SquareData{
         //
         // return ceilingBlock
 
-        const down = new Point(-0,-length * this.yCoord,0)
-        const right = new Point(length * this.xCoord, 0, 0)
+        const down = new Point(-0,(-length * this.yCoord) -length,0)
+        const right = new Point((length * this.xCoord)+length, 0, 0)
         const side = new Side(right, originCeiling, down)
 
         const wall = new Block(side, [0,0,thickness])
-        wall.translate(0,0,(height * (this.zCoord + 1)) - thickness)
+        wall.translate(0,0,(height * (this.zCoord + 1)))
         return wall
     }
 }

@@ -12,10 +12,15 @@ import ammo_medium from './assets/ammo_medium.png'
 import deathpit from './assets/deathpit.png';
 import controlpoint from './assets/cp_neutral.png'
 import spawn_red from './assets/spawn_red.png'
+import spawn_blu from './assets/spawn_blu.png'
 import door_north from './assets/door_north.png'
 import door_south from './assets/door_south.png'
 import door_east from './assets/door_east.png'
 import door_west from './assets/door_west.png'
+import ramp_north from './assets/ramp_north.png'
+import ramp_south from './assets/ramp_south.png'
+import ramp_east from './assets/ramp_east.png'
+import ramp_west from './assets/ramp_west.png'
 
 
 import './App.css';
@@ -76,51 +81,77 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
 
     var spawn_picture = null
     if (data.hasSpawn){
-        spawn_picture = <img className={"Overlay"} src={spawn_red}/>
+        if (data.spawnTeam == 2){
+            spawn_picture = <img className={"Overlay"} src={spawn_red}/>
+        } else{
+            spawn_picture = <img className={"Overlay"} src={spawn_blu}/>
+        }
+
     }
 
     var door_north_pic = null
     if (data.hasNorthDoor){
         door_north_pic = <img className={"Overlay"} src={door_north}/>
     }
-
     var door_south_pic = null
     if (data.hasSouthDoor){
         door_south_pic = <img className={"Overlay"} src={door_south}/>
     }
-
     var door_east_pic = null
     if (data.hasEastDoor){
         door_east_pic = <img className={"Overlay"} src={door_east}/>
     }
-
     var door_west_pic = null
     if (data.hasWestDoor){
         door_west_pic = <img className={"Overlay"} src={door_west}/>
+    }
+    var ramp_north_pic = null
+    if (data.hasNorthRamp){
+        ramp_north_pic = <img className={"Overlay"} src={ramp_north}/>
+    }
+    var ramp_south_pic = null
+    if (data.hasSouthRamp){
+        ramp_south_pic = <img className={"Overlay"} src={ramp_south}/>
+    }
+    var ramp_east_pic = null
+    if (data.hasEastRamp){
+        ramp_east_pic = <img className={"Overlay"} src={ramp_east}/>
+    }
+    var ramp_west_pic = null
+    if (data.hasWestRamp){
+        ramp_west_pic = <img className={"Overlay"} src={ramp_west}/>
     }
 
     function handleKeyUp(event: any){
         if (event.key === "ArrowUp"){
             if (event.ctrlKey){
                 data.hasNorthDoor = !data.hasNorthDoor
+            } else if(event.shiftKey){
+                data.hasNorthRamp = !data.hasNorthRamp
             } else{
                 data.hasNorthWall = !data.hasNorthWall
             }
         } else if (event.key === "ArrowDown"){
             if (event.ctrlKey){
                 data.hasSouthDoor = !data.hasSouthDoor
+            } else if(event.shiftKey){
+                data.hasSouthRamp = !data.hasSouthRamp
             } else{
                 data.hasSouthWall = !data.hasSouthWall
             }
         } else if (event.key === "ArrowRight"){
             if (event.ctrlKey){
                 data.hasEastDoor = !data.hasEastDoor
+            } else if(event.shiftKey){
+                data.hasEastRamp = !data.hasEastRamp
             } else{
                 data.hasEastWall = !data.hasEastWall
             }
         } else if(event.key === "ArrowLeft"){
             if (event.ctrlKey){
                 data.hasWestDoor = !data.hasWestWall
+            } else if(event.shiftKey){
+                data.hasWestRamp = !data.hasWestRamp
             } else{
                 data.hasWestWall = !data.hasWestWall
             }
@@ -181,6 +212,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             {spawn_picture}
             {health_picture}{ammo_medium_pic}
             {door_north_pic}{door_south_pic}{door_east_pic}{door_west_pic}
+            {ramp_north_pic}{ramp_south_pic}{ramp_east_pic}{ramp_west_pic}
         </span>
     );
 }
