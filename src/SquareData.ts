@@ -841,7 +841,7 @@ class SquareData{
         if (this.hasAmmoMedium){
             returnString += this.createPickup("ammopack_medium", counter)
         }
-        if (this.hasFloor && this.zCoord > 0){
+        if (this.hasLight){
             returnString += this.createLight(counter)
         }
 
@@ -939,6 +939,11 @@ class SquareData{
         const wall = new Block(side, [0,0,thickness])
         wall.translate(0,0,(height * (this.zCoord + 1)))
         return wall
+    }
+
+    static fromJSON(square:any) {
+        const sq = Object.create(SquareData.prototype)
+        return Object.assign(sq,square)
     }
 }
 

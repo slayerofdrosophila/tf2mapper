@@ -11,6 +11,7 @@ import health_medium from './assets/health_medium.png'
 import ammo_medium from './assets/ammo_medium.png'
 import deathpit from './assets/deathpit.png';
 import controlpoint from './assets/cp_neutral.png'
+import light from './assets/light.png'
 import spawn_red from './assets/spawn_red.png'
 import spawn_blu from './assets/spawn_blu.png'
 import door_north from './assets/door_north.png'
@@ -122,7 +123,13 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         ramp_west_pic = <img className={"Overlay"} src={ramp_west}/>
     }
 
+    var light_pic = null
+    if (data.hasLight){
+        light_pic = <img className={"Overlay"} src={light}/>
+    }
+
     function handleKeyUp(event: any){
+        console.log(event.key)
         if (event.key === "ArrowUp"){
             if (event.ctrlKey){
                 data.hasNorthDoor = !data.hasNorthDoor
@@ -180,6 +187,8 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             data.hasAmmoMedium = !data.hasAmmoMedium
         } else if(event.key === " "){
             data.hasFloor = !data.hasFloor
+        } else if (event.key === "l"){
+            data.hasLight = !data.hasLight
         }
 
         props.handleUpdate(data)
@@ -213,6 +222,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             {health_picture}{ammo_medium_pic}
             {door_north_pic}{door_south_pic}{door_east_pic}{door_west_pic}
             {ramp_north_pic}{ramp_south_pic}{ramp_east_pic}{ramp_west_pic}
+            {light_pic}
         </span>
     );
 }

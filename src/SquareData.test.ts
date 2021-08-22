@@ -13,12 +13,11 @@ mapper.floors[0][0][0].hasEastWall = false
 mapper.floors[0][0][0].hasNorthDoor = true
 mapper.floors[0][0][0].hasSpawn = true
 
-appendFile("testdata1.vmf",mapper.vmf(), function (err){
+const mapstr = JSON.stringify(mapper)
+const newmapper = Mapper.fromJSON(JSON.parse(mapstr))
+
+appendFile("testdata1.vmf",newmapper.vmf(), function (err){
     if (err) throw err;
     console.log("saved!!")
 })
 
-appendFile("testdata1.json",JSON.stringify(mapper), function (err){
-    if (err) throw err;
-    console.log("saved!!")
-})

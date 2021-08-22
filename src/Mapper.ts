@@ -41,6 +41,13 @@ class Mapper{
 
     }
 
+    static fromJSON(obj:any):Mapper {
+        const m = Object.create(Mapper.prototype)
+        const floors:any[][][] = obj.floors
+        Object.assign(m, obj, {floors: floors.map(rows => rows.map( row => row.map( square => SquareData.fromJSON(square))))})
+        return m
+    }
+
     clone():Mapper {
         const newmapper = new Mapper(this.mapWidth, this.mapHeight, this.mapFloors)
         newmapper.floors = this.floors.map(floor => floor.map(row => row.map(square => square.clone())))

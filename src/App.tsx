@@ -48,7 +48,6 @@ function App() {
     )
 
     function exportVmf(){
-
         var c = document.createElement("a");
         c.download = "mallet.vmf";
 
@@ -57,6 +56,25 @@ function App() {
         });
         c.href = window.URL.createObjectURL(t);
         c.click();
+    }
+    function exportJson(){
+        var c = document.createElement("a");
+        c.download = "mallet.json";
+
+        var t = new Blob([JSON.stringify(mapper)], {
+            type: "text/plain"
+        });
+        c.href = window.URL.createObjectURL(t);
+        c.click();
+    }
+
+    function loadJson(event: any){
+        const fileReader = new FileReader()
+        fileReader.readAsText(event.target.files[0], "UTF-8")
+        fileReader.onload = e => {
+            // @ts-ignore
+            setMapper(Mapper.fromJSON(JSON.parse(e.target.result as string)))
+        }
     }
 
     function handleKeyUp(e: any){
@@ -92,6 +110,8 @@ function App() {
 
                     </table>
                     <button onClick={exportVmf}>Click here to export .VMF</button>
+                    <button onClick={exportJson}>Click here to export .JSON (SAVE FILE)</button>
+                    <input type={"file"} name={"file"} onChange={loadJson}></input>
                     <p>check out the project: <a href={"https://github.com/slayerofdrosophila/tf2mapper"}>github.com/slayerofdrosophila/tf2mapper (Good luck)</a></p>
                 </td>
                     <td>
@@ -131,6 +151,10 @@ function App() {
                                     <td>Med. Health / Ammo</td>
                                 </tr>
                                 <tr>
+                                    <td>L</td>
+                                    <td>Light</td>
+                                </tr>
+                                <tr>
                                     <td>Number key (1-0)</td>
                                     <td>Switch level</td>
                                 </tr>
@@ -145,17 +169,16 @@ function App() {
                                 <li>Press the appropriate key to put a certain prefab there</li>
                                 <li>Pressing the key again will remove it</li>
                                 <li>Each square can hold 1 of everything, if desired</li>
-                                <li>HINT: Zoom out to fit the entire grid on your screen</li>
                             </ul>
 
                             <p>Pro mapper tips</p>
                             <ul>
-                                <li>Seal off the entire inside of your map with walls</li>
+                                <li>Seal off the inside of your map with walls</li>
                                 <ul><li>If you don't do this, the map won't work</li></ul>
+                                <li>Zoom out to fit the whole grid on your screen</li>
+                                <li>Lighting is not necessary, but if you add 1 light, make sure to light the whole map</li>
                                 <li>Doors take up the entire face of a wall</li>
                                 <ul><li>If you make them intersect with a wall at the corner, it will still work, but will look bad</li></ul>
-                                <li>You can place multiple spawns to create a large spawn room</li>
-                                <ul><li>Each will have its own resupply cabinet, though</li></ul>
                                 <li>Doors placed inside the same tile as a spawn room will only be usable by the team that owns the spawn</li>
                             </ul>
                         </div>
