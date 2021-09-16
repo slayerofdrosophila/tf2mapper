@@ -28,6 +28,13 @@ import './App.css';
 import {on} from "cluster";
 import {SquareData} from "./SquareData";
 
+/**
+ * This does not really do much except:
+ * handle key inputs
+ * display things in the grid (on the App page)
+ * @param props
+ * @constructor
+ */
 function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => void }) {
 
     // const [data, setData] = useState(props.data)
@@ -156,7 +163,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             }
         } else if(event.key === "ArrowLeft"){
             if (event.ctrlKey){
-                data.hasWestDoor = !data.hasWestWall
+                data.hasWestDoor = !data.hasWestDoor
             } else if(event.shiftKey){
                 data.hasWestRamp = !data.hasWestRamp
             } else{

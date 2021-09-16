@@ -13,6 +13,21 @@
   top:0px;
 }
 
+.SquareTransparent {
+  text-align: center;
+  text-decoration:none;
+  position:relative;
+  display:inline-block;
+  height: 64px;
+  float:left;
+}
+
+.OverlayTransparent {
+  position:absolute;
+  left:0px;
+  top:0px;
+}
+
 td{
   padding: 0px;
 }

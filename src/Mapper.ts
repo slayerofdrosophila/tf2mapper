@@ -1,7 +1,18 @@
 import {SquareData} from "./SquareData";
 import {mapVmf} from "./Geometry";
 
-
+/**
+ * The Mapper class
+ * Performs few functions, only exists to hold everything.
+ *
+ * This file also contains the Counter class, which has one function (returns number and increments the number)
+ * Only one counter is created which is then passed around everywhere so that each brush face / entity has a unique id
+ * Kind of clunky but idk what else
+ *
+ * To find out about how it makes the file, go to the vmf() function
+ * and look for usages of generateSolidsVmf()
+ * Also look for generateEntitiesVmf and generateCeilingVmf
+ */
 class Mapper{
 
     mapWidth: number
@@ -41,6 +52,10 @@ class Mapper{
 
     }
 
+    /**
+     * Load function
+     * @param obj
+     */
     static fromJSON(obj:any):Mapper {
         const m = Object.create(Mapper.prototype)
         const floors:any[][][] = obj.floors
@@ -60,6 +75,9 @@ class Mapper{
         this.floors[z][this.mapHeight -1 - y][this.mapWidth -1 - x].mirrorValues(this.floors[z][y][x])
     }
 
+    /**
+     * This is there to return a giant string which will go into a vmf text file.
+     */
     vmf(){
 
         const counter = new Counter()

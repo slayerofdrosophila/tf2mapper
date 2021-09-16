@@ -6,6 +6,19 @@ const length = 256
 const height = 256
 const thickness = 32
 
+/**
+ * This is where the magic happens.
+ *
+ * Responsible for holding data about itself and creating a vmf string representation of its items.
+ * Has a seperate function fo blocks (brushes) and entities.
+ * Because entities and brushes need to go separate in the VMF (i think)
+ *
+ * A big limitation of this method of laying things out is that each SquareData is unaware of what happens in its neighbors.
+ * However I have continued anyway, so no multi-block structures for you (probably)
+ *
+ * If you ever decide to add prefabs, make sure to update the mirror / clone functions as well!
+ * And remember that mirror flips orientation of things (north ramp becomes south ramp)
+ */
 class SquareData{
 
     xCoord = -1
@@ -290,15 +303,28 @@ class SquareData{
             walls[9] = this.generateBlock(height, thickness, "westramp")
         }
 
-        var bobby = ""
+        var wallsVmfString = ""
 
-        walls.forEach(wall => {
-            if (wall != null) {
-                wall.translate(length * this.xCoord, length * -this.yCoord, this.zCoord*length)
-                bobby += "//"
-                bobby += wall.vmf(counter)
-            }})
-        return bobby
+        for (let i = 0; i < walls.length; i++){
+            if (walls[i] != null) {
+                walls[i].translate(length * this.xCoord, length * -this.yCoord, this.zCoord*length)
+                wallsVmfString += "//"
+                if (i == 4) { // 4 is floor (rhymes) (this gives floor the gray boxes one instead of the walls which are reflectivity 50)
+                    wallsVmfString += walls[i].vmf(counter, "DEV/DEV_BLENDMEASURE")
+                } else{
+                    wallsVmfString += walls[i].vmf(counter)
+                }
+            }
+        }
+
+        // Above code used to be done this way
+        // walls.forEach(wall => {
+        //     if (wall != null) {
+        //         wall.translate(length * this.xCoord, length * -this.yCoord, this.zCoord*length)
+        //         wallsVmfString += "//"
+        //         wallsVmfString += wall.vmf(counter)
+        //     }})
+        return wallsVmfString
     }
 
     generateEntitiesVmf(counter: Counter) {
@@ -875,7 +901,7 @@ class SquareData{
     
     createLight(counter: Counter){
 
-        const lightSpot = new Point((this.xCoord * length) + (length/2), -(this.yCoord * length) - (length/2), (this.zCoord * height)-1)
+        const lightSpot = new Point((this.xCoord * length) + (length/2), -(this.yCoord * length) - (length/2), (this.zCoord * height)-1+height)
         
         return(`
             entity

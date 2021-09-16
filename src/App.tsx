@@ -6,6 +6,10 @@ import {Mapper} from "./Mapper";
 import {SquareData} from "./SquareData";
 import {setupMaster} from "cluster";
 
+/**
+ * Welcome
+ * @constructor
+ */
 function App() {
 
     // store the rows inside some structure...
@@ -83,7 +87,7 @@ function App() {
             return
         }
 
-        if (!isNaN(e.key)){
+        if (!isNaN(e.key)){ // if key is a number, change the floor to that number (one based indexing)
             let number = parseInt(e.key)
             if (number == 0){
                 number = 10
@@ -94,6 +98,18 @@ function App() {
         if (e.key == "`"){
             mapper.topFloor = currentFloor
             setMapper(mapper.clone())
+        }
+
+        if (e.key == "["){ // [ and ] are for going up and down 1 level, in case that's more convenient
+            if (currentFloor > 1){
+                setCurrentFloor(currentFloor-1)
+            }
+        }
+
+        if (e.key == "]"){
+            if (currentFloor < 10){
+                setCurrentFloor(currentFloor+1)
+            }
         }
     }
 
@@ -159,8 +175,12 @@ function App() {
                                     <td>Switch level</td>
                                 </tr>
                                 <tr>
+                                    <td>Square brackets ([ and ])</td>
+                                    <td>Switch level</td>
+                                </tr>
+                                <tr>
                                     <td>~</td>
-                                    <td>Set current level as top level (places ceiling over it)</td>
+                                    <td>Set current level as top level (places ceiling over all tiles)</td>
                                 </tr>
                                 </tbody>
                             </table>

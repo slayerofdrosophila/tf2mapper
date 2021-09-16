@@ -1,5 +1,16 @@
 import {Counter} from "./Mapper";
 
+/**
+ * Each brush (called a "block" in this program) is represented in the VMF by only 6 sides.
+ * Each side is composed of 3 points.
+ * Each point is a grouping of x,y,z coordinates.
+ *
+ * You can create a Block with as little as a single Side and a "displacement"
+ * which is the "vector" of displacement of the face opposite the face you provide should go.
+ *
+ * e.g. a Side at (-1,-1,0), (1,-1,0), (1,1,0) (fourth one is assumed at -1, 1) and a displacement of (0,0,32)
+ * gives you a Block 32 thick that is sitting on top of the origin
+ */
 class Point{
     x: number
     y: number
