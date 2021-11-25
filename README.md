@@ -2,23 +2,21 @@
 
 Works in your browser
 
+"Intuitive" interface
 
-uh
 
-beta version features:
+Features:
 * works
 * KOTH points / logic
 * spawn rooms
 * shutter doors
-
-
-to be done before v1:
-* ~~resupply cabinets~~
+* save / load
 * lighting
-* ~~pickups~~
-* saws
+* pickups
 
-to be done before actual viable product:
-* ~~multiple levels~~
-* saving / loading
+
+tbd:
 * textures
+* more prefabs
+* more gamemodes (ctf, 5cp)
+* saw / deathpit prefab
