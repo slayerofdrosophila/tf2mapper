@@ -94,7 +94,6 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         } else{
             spawn_picture = <img className={"Overlay"} src={spawn_blu}/>
         }
-
     }
 
     var door_north_pic = null
@@ -135,6 +134,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         light_pic = <img className={"Overlay"} src={light}/>
     }
 
+    // This could definitely be a switch statement.
     function handleKeyUp(event: any){
         console.log(event.key)
         if (event.key === "ArrowUp"){
@@ -199,7 +199,6 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         }
 
         props.handleUpdate(data)
-        // setData({...data}) // this updates the state, very importatnt
 
     }
 

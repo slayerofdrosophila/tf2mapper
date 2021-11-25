@@ -5,6 +5,7 @@ import Square from "./Square";
 import {Mapper} from "./Mapper";
 import {SquareData} from "./SquareData";
 import {setupMaster} from "cluster";
+import SidePanel from "./SidePanel";
 
 /**
  * Welcome
@@ -16,15 +17,25 @@ function App() {
     // generate table from dimensions?
     // collect square data and put into vmf
 
+    // default: 17,9,10
     const [mapper, setMapper] = useState(new Mapper(17,9, 10))
     const [currentFloor, setCurrentFloor] = useState(0)
     const [topFloor, setTopFloor] = useState(10)
 
+    const [sideVisible, setSideVisible] = useState(true)
+    const [leakStatusColor, setLeakStatusColor] = useState("black")
+    const [dismissedAlert, setDismissedAlert] = useState(false)
+
+    // This happens every time a button is pressed.
+    // This App passes this function into the Square s.
+    // The setMapper(clone) is to refresh the state of the Mapper and cause the pictures to change.
     function handleUpdate(data:SquareData) {
+        console.log("handle update");
         mapper.mirror(data.xCoord, data.yCoord, data.zCoord)
         setMapper(mapper.clone())
     }
-    //
+
+    // This was old code for creating the grid. I am emotionally attached to it.
     // var floors = mapper.floors
     // const display = floors.map(floor => {
     //     floor.map(row => {
@@ -39,7 +50,8 @@ function App() {
     var floors = mapper.floors
     var rows = floors[currentFloor]
 
-    // var rows = mapper.rows
+    // This renders the grid thingy
+    // if you want multi-layers: somehow render the lower level at the same time, underneath??
     const grid = rows.map(row => {
         var squares: any[] = []
             for (const square in row) {
@@ -61,6 +73,9 @@ function App() {
         c.href = window.URL.createObjectURL(t);
         c.click();
     }
+
+    // The important bit is the JSON.stringify(mapper)
+    // The entire Mapper object is pasted
     function exportJson(){
         var c = document.createElement("a");
         c.download = "mallet.json";
@@ -78,6 +93,25 @@ function App() {
         fileReader.onload = e => {
             // @ts-ignore
             setMapper(Mapper.fromJSON(JSON.parse(e.target.result as string)))
+        }
+    }
+
+    function leak(){
+        let conf = true
+        if (!dismissedAlert){
+            // eslint-disable-next-line no-restricted-globals
+            let conf = confirm("This may crash the app or your browser. Please save before using. \nIf the app crashes, press X on the upper right corner.")
+        }
+        if (conf) {
+            setDismissedAlert(true)
+            let res = mapper.leakCheck()
+            if (res) {
+                setLeakStatusColor("green")
+                console.log("Not leaking")
+            } else {
+                setLeakStatusColor("red")
+                console.log("leaking")
+            }
         }
     }
 
@@ -113,101 +147,47 @@ function App() {
         }
     }
 
+    function visible(){
+        if (sideVisible){
+            setSideVisible(false)
+        } else{
+            setSideVisible(true)
+        }
+    }
+
+    function leakText(){
+        if (leakStatusColor === "red"){
+            return " leaking"
+        } else if (leakStatusColor === "green"){
+            return " not leaking"
+        } else {
+            return " not checked yet"
+        }
+    }
+
     return (
         <div>
             <table>
                 <tbody>
-                <td>
-                    <h1>Floor: {currentFloor + 1}      Top floor: {mapper.topFloor + 1}</h1>
-                    <table onKeyUp={handleKeyUp} style={{borderSpacing: "0px", borderCollapse: "separate"}}>
-                        <tbody>
-                            {grid}
-                        </tbody>
-
-                    </table>
-                    <button onClick={exportVmf}>Click here to export .VMF</button>
-                    <button onClick={exportJson}>Click here to export .JSON (SAVE FILE)</button>
-                    <input type={"file"} name={"file"} onChange={loadJson}></input>
-                    <p>check out the project: <a href={"https://github.com/slayerofdrosophila/tf2mapper"}>github.com/slayerofdrosophila/tf2mapper (Good luck)</a></p>
-                </td>
                     <td>
-                        <div>
-                            <table>
-                                <thead>
-                                <th scope="col">Key</th>
-                                <th scope="col">Prefab</th>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>Arrow Key</td>
-                                    <td>Wall</td>
-                                </tr>
-                                <tr>
-                                    <td>CTRL + Arrow</td>
-                                    <td>Shutter Door</td>
-                                </tr>
-                                <tr>
-                                    <td>SHIFT + Arrow</td>
-                                    <td>Ramp to next floor (1:1)</td>
-                                </tr>
-                                <tr>
-                                    <td>Space</td>
-                                    <td>Floor (1st level has all floor filled by default)</td>
-                                </tr>
-                                <tr>
-                                    <td>S</td>
-                                    <td>Spawn Room (no walls/door)</td>
-                                </tr>
-                                <tr>
-                                    <td>C</td>
-                                    <td>KOTH Cap Point</td>
-                                </tr>
-                                <tr>
-                                    <td>H / A</td>
-                                    <td>Med. Health / Ammo</td>
-                                </tr>
-                                <tr>
-                                    <td>L</td>
-                                    <td>Light</td>
-                                </tr>
-                                <tr>
-                                    <td>Number key (1-0)</td>
-                                    <td>Switch level</td>
-                                </tr>
-                                <tr>
-                                    <td>Square brackets ([ and ])</td>
-                                    <td>Switch level</td>
-                                </tr>
-                                <tr>
-                                    <td>~</td>
-                                    <td>Set current level as top level (places ceiling over all tiles)</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <ul>
-                                <li>Hover over a square to select it</li>
-                                <li>Press the appropriate key to put a certain prefab there</li>
-                                <li>Pressing the key again will remove it</li>
-                                <li>Each square can hold 1 of everything, if desired</li>
-                            </ul>
+                        <h1>Floor: {currentFloor + 1}      Top floor: {mapper.topFloor + 1}</h1>
+                        <table onKeyUp={handleKeyUp} style={{borderSpacing: "0px", borderCollapse: "separate"}}>
+                            <tbody>
+                                {grid}
+                            </tbody>
 
-                            <p>Pro mapper tips</p>
-                            <ul>
-                                <li>Seal off the inside of your map with walls</li>
-                                <ul><li>If you don't do this, the map won't work</li></ul>
-                                <li>Zoom out to fit the whole grid on your screen</li>
-                                <li>Lighting is not necessary, but if you add 1 light, make sure to light the whole map</li>
-                                <li>Doors take up the entire face of a wall</li>
-                                <ul><li>If you make them intersect with a wall at the corner, it will still work, but will look bad</li></ul>
-                                <li>Doors placed inside the same tile as a spawn room will only be usable by the team that owns the spawn</li>
-                            </ul>
-                        </div>
+                        </table>
+                        <button onClick={exportVmf}>Click here to export .VMF</button>
+                        <button onClick={exportJson}>Click here to export .JSON (SAVE FILE)</button>
+                        <input type={"file"} name={"file"} onChange={loadJson}></input>
+                        <button onClick={visible} style={{float: 'right'}}> Show/Hide Side Info</button>
+                        <br></br><button onClick={leak}>Check for leaks (MAY HANG OR CRASH)</button>
+                        <text style={{color: leakStatusColor}}>{leakText()}</text>
+                        <p>check out the project: <a href={"https://github.com/slayerofdrosophila/tf2mapper"}>github.com/slayerofdrosophila/tf2mapper (Good luck)</a></p>
                     </td>
+                {sideVisible && <SidePanel/>}
                 </tbody>
             </table>
-
-
-
         </div>
     );
 }

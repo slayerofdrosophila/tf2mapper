@@ -2,6 +2,8 @@ import {Block, originPoint, Point, Side} from "./Geometry";
 import {Counter} from "./Mapper";
 import {spawn} from "child_process";
 
+// You CAN change these, but I don't think these are used **perfectly** as I may have hardcoded in some numbers.
+// Also it would probably make the map impossible to seal.
 const length = 256
 const height = 256
 const thickness = 32
@@ -24,6 +26,8 @@ class SquareData{
     xCoord = -1
     yCoord = -1
     zCoord = -1
+
+    visited: boolean = false
 
     hasNorthWall: boolean = false
     hasSouthWall: boolean = false
@@ -50,9 +54,9 @@ class SquareData{
     hasEastRamp: boolean = false
     hasWestRamp: boolean = false
 
-    spawnTeam: number = 3 // 3 = BLU; 2 = RED
+    spawnTeam: number = -1 // 2 = BLU; 3 = RED
 
-    constructor(x: number,y: number, z: number, hasSky = false) {
+    constructor(x: number,y: number, z: number, hasSky = false, dimensions: [number, number] = [256,256]) { // dimensions not used anywhere... I think I forgot why I added it
         this.yCoord = y
         this.xCoord = x
         this.zCoord = z
@@ -62,7 +66,6 @@ class SquareData{
         if (z === 0){
             this.hasFloor = true
         }
-
     }
     mirrorValues(other:SquareData) {
         this.hasNorthWall = other.hasSouthWall
@@ -98,7 +101,7 @@ class SquareData{
 
     }
     clone():SquareData {
-        const newsq = new SquareData(this.xCoord, this.yCoord, this.zCoord)
+        const newsq = new SquareData(this.xCoord, this.yCoord, this.zCoord) // red squiggly here but it has default parameters
         newsq.hasNorthWall = this.hasNorthWall
         newsq.hasSouthWall = this.hasSouthWall
         newsq.hasEastWall = this.hasEastWall
@@ -317,13 +320,6 @@ class SquareData{
             }
         }
 
-        // Above code used to be done this way
-        // walls.forEach(wall => {
-        //     if (wall != null) {
-        //         wall.translate(length * this.xCoord, length * -this.yCoord, this.zCoord*length)
-        //         wallsVmfString += "//"
-        //         wallsVmfString += wall.vmf(counter)
-        //     }})
         return wallsVmfString
     }
 
