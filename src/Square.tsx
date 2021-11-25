@@ -22,80 +22,84 @@ import ramp_north from './assets/ramp_north.png'
 import ramp_south from './assets/ramp_south.png'
 import ramp_east from './assets/ramp_east.png'
 import ramp_west from './assets/ramp_west.png'
+import below_wall_north from './assets/below_wall_north.png';
+import below_wall_west from './assets/below_wall_west.png';
+import below_wall_south from './assets/below_wall_south.png';
+import below_wall_east from './assets/below_wall_east.png';
+import above_wall_north from './assets/above_wall_north.png';
+import above_wall_west from './assets/above_wall_west.png';
+import above_wall_south from './assets/above_wall_south.png';
+import above_wall_east from './assets/above_wall_east.png';
 
 
 import './App.css';
 import {on} from "cluster";
 import {SquareData} from "./SquareData";
+import {log} from "util";
 
 /**
  * This does not really do much except:
  * handle key inputs
  * display things in the grid (on the App page)
- * @param props
+ * @param props: data (squaredata); handleUpdate (refresh state and mirror square function); above/below(data of above/below cells)
  * @constructor
  */
-function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => void }) {
+// function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => void}) {
+function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => void; above: SquareData | null; below: SquareData | null}) {
 
     // const [data, setData] = useState(props.data)
     const data = props.data
+    const above = props.above
+    const below = props.below
 
     var myDiv:HTMLSpanElement|null;
 
+    // This repeats an incredible amount of times.
+    // Unfortunately, I am not clever enough to think of a way around this.
     var no_floor_pic = null
-    if (!data.hasFloor){
+    if (data.hasFloor){
         no_floor_pic = <img className={"Overlay"} src={floor}/>
     }
-
-    var wall_north_picture = null
+    var wall_north_pic = null
     if (data.hasNorthWall){
-        wall_north_picture = <img className={"Overlay"} src={wall_north}/>
+        wall_north_pic = <img className={"Overlay"} src={wall_north}/>
     }
-
-    var wall_south_picture = null
+    var wall_south_pic = null
     if (data.hasSouthWall){
-        wall_south_picture = <img className={"Overlay"} src={wall_south}/>
+        wall_south_pic = <img className={"Overlay"} src={wall_south}/>
     }
-
-    var wall_west_picture = null
+    var wall_west_pic = null
     if (data.hasWestWall){
-        wall_west_picture = <img className={"Overlay"} src={wall_west}/>
+        wall_west_pic = <img className={"Overlay"} src={wall_west}/>
     }
-
-    var wall_east_picture = null
+    var wall_east_pic = null
     if (data.hasEastWall){
-        wall_east_picture = <img className={"Overlay"} src={wall_east}/>
+        wall_east_pic = <img className={"Overlay"} src={wall_east}/>
     }
-
-    var health_picture = null
+    var health_pic = null
     if (data.hasHealth){
-        health_picture = <img className={"Overlay"} src={health_medium}/>
+        health_pic = <img className={"Overlay"} src={health_medium}/>
     }
-
     var ammo_medium_pic = null
     if (data.hasAmmoMedium){
         ammo_medium_pic = <img className={"Overlay"} src={ammo_medium}/>
     }
-
-    var deathpit_picture = null
+    var deathpit_pic = null
     if (data.hasPit){
-        deathpit_picture = <img className={"Overlay"} src={deathpit}/>
+        deathpit_pic = <img className={"Overlay"} src={deathpit}/>
     }
-
-    var point_picture = null
+    var point_pic = null
     if (data.hasPoint){
-        point_picture = <img className={"Overlay"} src={controlpoint}/>
+        point_pic = <img className={"Overlay"} src={controlpoint}/>
     }
-
-    var spawn_picture = null
+    var spawn_pic = null
     if (data.hasSpawn){
         if (data.spawnTeam == 2){
-            spawn_picture = <img className={"Overlay"} src={spawn_red}/>
+            spawn_pic = <img className={"Overlay"} src={spawn_red}/>
         } else{
-            spawn_picture = <img className={"Overlay"} src={spawn_blu}/>
+            spawn_pic = <img className={"Overlay"} src={spawn_blu}/>
         }
     }
-
     var door_north_pic = null
     if (data.hasNorthDoor){
         door_north_pic = <img className={"Overlay"} src={door_north}/>
@@ -128,11 +132,48 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     if (data.hasWestRamp){
         ramp_west_pic = <img className={"Overlay"} src={ramp_west}/>
     }
-
     var light_pic = null
     if (data.hasLight){
         light_pic = <img className={"Overlay"} src={light}/>
     }
+    var below_wall_north_pic = null
+    var below_wall_south_pic = null
+    var below_wall_west_pic = null
+    var below_wall_east_pic = null
+    if (below != null){
+        if (below.hasNorthWall){
+            below_wall_north_pic = <img className={"Overlay"} src={below_wall_north}/>
+        }
+        if (below.hasSouthWall){
+            below_wall_south_pic = <img className={"Overlay"} src={below_wall_south}/>
+        }
+        if (below.hasWestWall){
+            below_wall_west_pic = <img className={"Overlay"} src={below_wall_west}/>
+        }
+        if (below.hasEastWall){
+            below_wall_east_pic = <img className={"Overlay"} src={below_wall_east}/>
+        }
+    }
+    var above_wall_north_pic = null
+    var above_wall_south_pic = null
+    var above_wall_west_pic = null
+    var above_wall_east_pic = null
+    if (above != null){
+        if (above.hasNorthWall){
+            above_wall_north_pic = <img className={"Overlay"} src={above_wall_north}/>
+        }
+        if (above.hasSouthWall){
+            above_wall_south_pic = <img className={"Overlay"} src={above_wall_south}/>
+        }
+        if (above.hasWestWall){
+            above_wall_west_pic = <img className={"Overlay"} src={above_wall_west}/>
+        }
+        if (above.hasEastWall){
+            above_wall_east_pic = <img className={"Overlay"} src={above_wall_east}/>
+        }
+    }
+
+    
 
     // This could definitely be a switch statement.
     function handleKeyUp(event: any){
@@ -198,6 +239,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             data.hasLight = !data.hasLight
         }
 
+        // mirrors this square and refreshes the state
         props.handleUpdate(data)
 
     }
@@ -214,21 +256,24 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     return (
         <span className="Square"
              onKeyUp={handleKeyUp} // this is only called when this div element has focus
-            onKeyPress={e => e.preventDefault()}
+             onKeyPress={e => e.preventDefault()}
              tabIndex={0} // this is needed to make div element "focusable"
              ref={assignReference} // this is needed to get the div element so that we can call focus on it
              onMouseEnter={handleMouseEnter} // this is to call focus on div when mouse enters
         >
             <img src={square} />
-            {deathpit_picture}
+            {deathpit_pic}
             {no_floor_pic}
-            {point_picture}
-            {wall_north_picture}{wall_south_picture}{wall_east_picture}{wall_west_picture}
-            {spawn_picture}
-            {health_picture}{ammo_medium_pic}
+            {point_pic}
+            {wall_north_pic}{wall_south_pic}{wall_east_pic}{wall_west_pic}
+            {below_wall_north_pic}{below_wall_south_pic}{below_wall_east_pic}{below_wall_west_pic}
+            {above_wall_north_pic}{above_wall_south_pic}{above_wall_east_pic}{above_wall_west_pic}
+            {spawn_pic}
+            {health_pic}{ammo_medium_pic}
             {door_north_pic}{door_south_pic}{door_east_pic}{door_west_pic}
             {ramp_north_pic}{ramp_south_pic}{ramp_east_pic}{ramp_west_pic}
             {light_pic}
+
         </span>
     );
 }

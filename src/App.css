@@ -31,3 +31,13 @@
 td{
   padding: 0px;
 }
+
+#overlay2 {
+  position:absolute;
+  left:0px;
+  top:0px;
+}
+
+#wrapper {
+  position:relative
+}

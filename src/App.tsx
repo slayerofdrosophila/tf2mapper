@@ -26,6 +26,9 @@ function App() {
     const [leakStatusColor, setLeakStatusColor] = useState("black")
     const [dismissedAlert, setDismissedAlert] = useState(false)
 
+    const [belowWallsVisible, setBelowWallsVisible] = useState(false)
+    const [aboveWallsVisible, setAboveWallsVisible] = useState(false)
+
     // This happens every time a button is pressed.
     // This App passes this function into the Square s.
     // The setMapper(clone) is to refresh the state of the Mapper and cause the pictures to change.
@@ -35,28 +38,37 @@ function App() {
         setMapper(mapper.clone())
     }
 
-    // This was old code for creating the grid. I am emotionally attached to it.
-    // var floors = mapper.floors
-    // const display = floors.map(floor => {
-    //     floor.map(row => {
-    //         var squares: any[] = []
-    //         for (const square in row) {
-    //             squares.push(<td><Square data={row[square]} handleUpdate={handleUpdate}/></td>)
-    //         }
-    //         return (<tr>{squares}</tr>)
-    //     })
-    // })
-
     var floors = mapper.floors
     var rows = floors[currentFloor]
 
-    // This renders the grid thingy
-    // if you want multi-layers: somehow render the lower level at the same time, underneath??
-    const grid = rows.map(row => {
-        var squares: any[] = []
-            for (const square in row) {
-                squares.push(<td><Square data={row[square]} handleUpdate={handleUpdate}/></td>)
+    // Creates grid of squares.
+    // This gets called every time the state refreshes... I actually have little idea how React works lol
+    // Anyway it actually seems to create a bunch of new Square components and push them into a 2d array
+    const grid = mapper.floors[currentFloor].map((row, index) => {
+        let squares: any[] = []
+        let onTopFloor: boolean = false
+        if (currentFloor === topFloor){
+            onTopFloor = true
+        }
+        let onBottomFloor: boolean = false
+        console.log(currentFloor);
+        if (currentFloor == 0){
+            onBottomFloor = true
+        }
+        for (const square in row) {
+            let above: SquareData | null = null
+            if (!onTopFloor && aboveWallsVisible){
+                above = mapper.floors[currentFloor+1][index][square]
             }
+            let below: SquareData | null = null
+            if (!onBottomFloor && belowWallsVisible){
+                below = mapper.floors[currentFloor-1][index][square]
+            }
+            // old line:
+            // squares.push(<td><Square data={row[square]} handleUpdate={handleUpdate}/></td>)
+            // I'm going to add 2 extra parameters to allow for viewing of multiple layers at a time
+            squares.push(<td><Square data={row[square]} handleUpdate={handleUpdate} above={above} below={below} /></td>)
+        }
         return (<tr>
             {squares}
         </tr>)
@@ -100,7 +112,7 @@ function App() {
         let conf = true
         if (!dismissedAlert){
             // eslint-disable-next-line no-restricted-globals
-            let conf = confirm("This may crash the app or your browser. Please save before using. \nIf the app crashes, press X on the upper right corner.")
+            let conf = confirm("This may crash the app or your browser. Please save before using. \n \nIf the app crashes, press X on the upper right corner of the error message (not your browser window's X button).")
         }
         if (conf) {
             setDismissedAlert(true)
@@ -147,12 +159,20 @@ function App() {
         }
     }
 
-    function visible(){
+    function toggleSide(){
         if (sideVisible){
             setSideVisible(false)
         } else{
             setSideVisible(true)
         }
+    }
+
+    // This is only two functions because React doesnt like passing parameters in buttons
+    function toggleXrayAbove(){
+        setAboveWallsVisible(!aboveWallsVisible)
+    }
+    function toggleXrayBelow(){
+        setBelowWallsVisible(!belowWallsVisible)
     }
 
     function leakText(){
@@ -171,16 +191,30 @@ function App() {
                 <tbody>
                     <td>
                         <h1>Floor: {currentFloor + 1}      Top floor: {mapper.topFloor + 1}</h1>
-                        <table onKeyUp={handleKeyUp} style={{borderSpacing: "0px", borderCollapse: "separate"}}>
-                            <tbody>
-                                {grid}
-                            </tbody>
+                        <div id={"wrapper"}>
+                            <div>
+                                <table onKeyUp={handleKeyUp} style={{borderSpacing: "0px", borderCollapse: "separate"}}>
+                                    <tbody>
+                                    {grid}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {/*<div id={"overlay2"}>
+                                <table style={{borderSpacing: "0px", borderCollapse: "separate"}}>
+                                    <tbody>
+                                    {above_grid}
+                                    </tbody>
+                                </table>
+                            </div>*/}
+                        </div>
 
-                        </table>
+
                         <button onClick={exportVmf}>Click here to export .VMF</button>
                         <button onClick={exportJson}>Click here to export .JSON (SAVE FILE)</button>
                         <input type={"file"} name={"file"} onChange={loadJson}></input>
-                        <button onClick={visible} style={{float: 'right'}}> Show/Hide Side Info</button>
+                        <button onClick={toggleSide} style={{float: 'right'}}> Show/Hide Side Info</button>
+                        <br></br><button onClick={toggleXrayAbove}>Toggle Wall Xray (Above)</button>
+                        <button onClick={toggleXrayBelow}>Toggle Wall Xray (Below)</button>
                         <br></br><button onClick={leak}>Check for leaks (MAY HANG OR CRASH)</button>
                         <text style={{color: leakStatusColor}}>{leakText()}</text>
                         <p>check out the project: <a href={"https://github.com/slayerofdrosophila/tf2mapper"}>github.com/slayerofdrosophila/tf2mapper (Good luck)</a></p>
