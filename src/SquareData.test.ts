@@ -22,4 +22,3 @@ appendFile("testdata1.vmf",newmapper.vmf(), function (err){
 })
 
 
-

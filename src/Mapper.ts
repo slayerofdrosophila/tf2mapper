@@ -73,6 +73,7 @@ class Mapper{
 
     mirror(x: number,y: number, z: number) {
         console.log(x,y,this.mapWidth,this.mapHeight )
+        // so the left side becomes a mirror of the right side.
         this.floors[z][this.mapHeight -1 - y][this.mapWidth -1 - x].mirrorValues(this.floors[z][y][x])
     }
 

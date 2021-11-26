@@ -14,6 +14,8 @@ import controlpoint from './assets/cp_neutral.png'
 import light from './assets/light.png'
 import spawn_red from './assets/spawn_red.png'
 import spawn_blu from './assets/spawn_blu.png'
+import flag_red from './assets/flag_red.png'
+import flag_blu from './assets/flag_blu.png'
 import door_north from './assets/door_north.png'
 import door_south from './assets/door_south.png'
 import door_east from './assets/door_east.png'
@@ -100,6 +102,14 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             spawn_pic = <img className={"Overlay"} src={spawn_blu}/>
         }
     }
+    var flag_pic = null
+    if (data.hasFlag){
+        if (data.flagTeam == 3){
+            flag_pic = <img className={"Overlay"} src={flag_red}/>
+        } else{
+            flag_pic = <img className={"Overlay"} src={flag_blu}/>
+        }
+    }
     var door_north_pic = null
     if (data.hasNorthDoor){
         door_north_pic = <img className={"Overlay"} src={door_north}/>
@@ -136,6 +146,10 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     if (data.hasLight){
         light_pic = <img className={"Overlay"} src={light}/>
     }
+    /*
+    These are the "x-ray" walls and floors. They are only shown if "above" and "below" are passed in.
+    They are only passed in if there is a floor above/below and xray is toggled on.
+     */
     var below_wall_north_pic = null
     var below_wall_south_pic = null
     var below_wall_west_pic = null
@@ -211,27 +225,19 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
                 data.hasWestWall = !data.hasWestWall
             }
         } else if (event.key === "h"){
-            if (data.hasHealth) {
-                data.hasHealth = false
-            } else{
-                data.hasHealth = true
-            }
+            data.hasHealth = !data.hasHealth
         } else if (event.key === "p"){
-            // if (data.hasPit) {
-            //     data.hasPit = false
-            // } else{
-            //     data.hasPit = true
-            // }
+            // data.hasPit = !data.hasPit
         } else if (event.key === "c"){
-            if (data.hasPoint) {
-                data.hasPoint = false
-            } else{
-                data.hasPoint = true
-            }
+            data.hasPoint = !data.hasPoint
+        } else if (event.key === "f"){
+            data.hasFlag = !data.hasFlag
         } else if (event.key === "s"){
+            // if (data.spawnTeam == -1){
+            //     data.spawnTeam = 2
+            // }
             data.hasSpawn = !data.hasSpawn
-        }
-        else if(event.key === "a"){
+        } else if(event.key === "a"){
             data.hasAmmoMedium = !data.hasAmmoMedium
         } else if(event.key === " "){
             data.hasFloor = !data.hasFloor
@@ -265,6 +271,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
             {deathpit_pic}
             {no_floor_pic}
             {point_pic}
+            {flag_pic}
             {wall_north_pic}{wall_south_pic}{wall_east_pic}{wall_west_pic}
             {below_wall_north_pic}{below_wall_south_pic}{below_wall_east_pic}{below_wall_west_pic}
             {above_wall_north_pic}{above_wall_south_pic}{above_wall_east_pic}{above_wall_west_pic}

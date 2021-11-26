@@ -39,9 +39,11 @@ class SquareData{
     hasHealth: boolean = false
     hasAmmoMedium: boolean = false
 
-    hasPit: boolean = false
-    hasPoint: boolean = false
     hasSpawn: boolean = false
+    hasPoint: boolean = false
+    hasFlag: boolean = false
+
+    hasPit: boolean = false
     hasLight: boolean = false
 
     hasNorthDoor: boolean = false
@@ -54,7 +56,8 @@ class SquareData{
     hasEastRamp: boolean = false
     hasWestRamp: boolean = false
 
-    spawnTeam: number = -1 // 2 = BLU; 3 = RED
+    spawnTeam: number = 3 // 2 = BLU; 3 = RED
+    flagTeam: number = -1 // 2 = BLU; 3 = RED
 
     constructor(x: number,y: number, z: number, hasSky = false, dimensions: [number, number] = [256,256]) { // dimensions not used anywhere... I think I forgot why I added it
         this.yCoord = y
@@ -78,6 +81,7 @@ class SquareData{
 
         this.hasPit = other.hasPit
         this.hasPoint = other.hasPoint
+        this.hasFlag = other.hasFlag
         this.hasFloor = other.hasFloor
         this.hasSky = other.hasSky
         this.hasSpawn = other.hasSpawn
@@ -93,14 +97,17 @@ class SquareData{
         this.hasEastRamp = other.hasWestRamp
         this.hasWestRamp = other.hasEastRamp
 
-        if (this.spawnTeam == 2){
-            other.spawnTeam = 3
-        } if (this.spawnTeam == 3){
-            other.spawnTeam = 2
-        }
+        // remember this becomes a mirror of the passed in one!
+        this.spawnTeam = 2
+        other.spawnTeam = 3
+
+        this.flagTeam = 2
+        other.flagTeam = 3
 
     }
     clone():SquareData {
+        // console.log("clone");
+        // console.log(this.xCoord + " " + this.yCoord + " " + this.zCoord)
         const newsq = new SquareData(this.xCoord, this.yCoord, this.zCoord) // red squiggly here but it has default parameters
         newsq.hasNorthWall = this.hasNorthWall
         newsq.hasSouthWall = this.hasSouthWall
@@ -113,10 +120,13 @@ class SquareData{
         newsq.hasPit = this.hasPit
         newsq.hasPoint = this.hasPoint
         newsq.hasFloor = this.hasFloor
+        newsq.hasLight = this.hasLight
+
         newsq.hasSky = this.hasSky
         newsq.hasSpawn = this.hasSpawn
         newsq.spawnTeam = this.spawnTeam
-        newsq.hasLight = this.hasLight
+        newsq.hasFlag = this.hasFlag
+        newsq.flagTeam = this.flagTeam
 
         newsq.hasNorthDoor = this.hasNorthDoor
         newsq.hasSouthDoor = this.hasSouthDoor
@@ -854,6 +864,95 @@ class SquareData{
                 "logicalpos" "[0 500]"
                 }
                 }
+            `
+        }
+
+        if (this.hasFlag){
+            const center = new Point(this.xCoord*length + length/2, -this.yCoord*length -length/2, this.zCoord*length + thickness)
+
+            // only RED gets the gamerules stuff
+            if (this.flagTeam === 2){
+                returnString += `
+                    entity
+        {
+            "id" "${counter.count()}"
+            "classname" "logic_auto"
+            "spawnflags" "1"
+            connections
+            {
+                "OnMultiNewRound" "ctf_gamerules,SetStalemateOnTimelimit,1,0,-1"
+                "OnMultiNewRound" "ctf_gamerules,SetRedTeamGoalString,Steal the Intelligence Briefcase from the enemy base.,0,-1"
+                "OnMultiNewRound" "ctf_gamerules,SetBlueTeamGoalString,Steal the Intelligence Briefcase from the enemy base.,0,-1"
+            }
+            "origin" "${center.pointsvmf()}"
+            editor
+            {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "comments" "You only need one logic_auto. If you already have one copy it's outputs here."
+                "logicalpos" "[0 -11768]"
+            }
+        }
+        entity
+        {
+            "id" "${counter.count()}"
+            "classname" "tf_gamerules"
+            "ctf_overtime" "1"
+            "targetname" "ctf_gamerules"
+            "origin" "${center.pointsvmf()}"
+            editor
+            {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 0]"
+            }
+        }
+        `
+            }
+
+
+            returnString += `
+        entity
+        {
+            "id" "${counter.count()}"
+            "classname" "item_teamflag"
+            "angles" "0 0 0"
+            "flag_icon" "../hud/objectives_flagpanel_carried"
+            "flag_model" "models/flag/briefcase.mdl"
+            "flag_paper" "player_intel_papertrail"
+            "flag_trail" "flagtrail"
+            "NeutralType" "1"
+            "ReturnBetweenWaves" "1"
+            "ReturnTime" "60"
+            "TeamNum" "${this.flagTeam}"
+            "trail_effect" "1"
+            "origin" "${center.pointsvmf()}"
+            editor
+            {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 3500]"
+            }
+        }
+        entity
+        {
+            "id" "${counter.count()}"
+            "classname" "func_capturezone"
+            "capturepoint" "1"
+            "StartDisabled" "0"
+            "TeamNum" "${this.flagTeam}"
+            ${this.generateBlock(height, thickness, "almostfill").translate(length * this.xCoord, length * -this.yCoord, this.zCoord*length).vmf(counter, "TOOLS/TOOLSTRIGGER")}
+            editor
+            {
+                "color" "220 30 220"
+                "visgroupshown" "1"
+                "visgroupautoshown" "1"
+                "logicalpos" "[0 4500]"
+            }
+        }
             `
         }
 
