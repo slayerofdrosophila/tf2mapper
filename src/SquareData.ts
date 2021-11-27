@@ -99,10 +99,7 @@ class SquareData{
 
         // remember this becomes a mirror of the passed in one!
         this.spawnTeam = 2
-        other.spawnTeam = 3
-
         this.flagTeam = 2
-        other.flagTeam = 3
 
     }
     clone():SquareData {

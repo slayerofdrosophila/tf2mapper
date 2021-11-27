@@ -231,11 +231,10 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         } else if (event.key === "c"){
             data.hasPoint = !data.hasPoint
         } else if (event.key === "f"){
+            data.flagTeam = 3
             data.hasFlag = !data.hasFlag
         } else if (event.key === "s"){
-            // if (data.spawnTeam == -1){
-            //     data.spawnTeam = 2
-            // }
+            data.spawnTeam = 3
             data.hasSpawn = !data.hasSpawn
         } else if(event.key === "a"){
             data.hasAmmoMedium = !data.hasAmmoMedium
