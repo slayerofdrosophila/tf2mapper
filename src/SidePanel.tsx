@@ -44,6 +44,10 @@ class SidePanel extends Component<any, any>{
                                 <td>KOTH Cap Point</td>
                             </tr>
                             <tr>
+                                <td>F</td>
+                                <td>CTF Flag</td>
+                            </tr>
+                            <tr>
                                 <td>H / A</td>
                                 <td>Med. Health / Ammo</td>
                             </tr>

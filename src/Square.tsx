@@ -104,7 +104,7 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     }
     var flag_pic = null
     if (data.hasFlag){
-        if (data.flagTeam == 3){
+        if (data.flagTeam == 2){
             flag_pic = <img className={"Overlay"} src={flag_red}/>
         } else{
             flag_pic = <img className={"Overlay"} src={flag_blu}/>

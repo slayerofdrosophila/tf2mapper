@@ -159,6 +159,10 @@ function App() {
         }
     }
 
+    // function resizeMapper(x: number, y: number, z: number){
+    //     setMapper(new Mapper(x,y,z))
+    // }
+
     function toggleSide(){
         if (sideVisible){
             setSideVisible(false)
