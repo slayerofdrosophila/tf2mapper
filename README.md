@@ -2,7 +2,7 @@
 
 Works in your browser
 
-"Intuitive" interface
+https://slayerofdrosophila.github.io/homepage/
 
 
 Features:
