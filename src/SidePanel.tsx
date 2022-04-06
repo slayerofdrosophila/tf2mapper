@@ -37,7 +37,7 @@ class SidePanel extends Component<any, any>{
                             </tr>
                             <tr>
                                 <td>S</td>
-                                <td>Spawn Room (no walls/door)</td>
+                                <td>Spawn Room + Resupply (no walls/door)</td>
                             </tr>
                             <tr>
                                 <td>C</td>

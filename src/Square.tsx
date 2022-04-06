@@ -12,8 +12,14 @@ import ammo_medium from './assets/ammo_medium.png'
 import deathpit from './assets/deathpit.png';
 import controlpoint from './assets/cp_neutral.png'
 import light from './assets/light.png'
-import spawn_red from './assets/spawn_red.png'
-import spawn_blu from './assets/spawn_blu.png'
+import spawn_red_north from './assets/spawn_red_north.png'
+import spawn_red_south from './assets/spawn_red_south.png'
+import spawn_red_west from './assets/spawn_red_west.png'
+import spawn_red_east from './assets/spawn_red_east.png'
+import spawn_blu_north from './assets/spawn_blu_north.png'
+import spawn_blu_south from './assets/spawn_blu_south.png'
+import spawn_blu_west from './assets/spawn_blu_west.png'
+import spawn_blu_east from './assets/spawn_blu_east.png'
 import flag_red from './assets/flag_red.png'
 import flag_blu from './assets/flag_blu.png'
 import door_north from './assets/door_north.png'
@@ -97,9 +103,31 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
     var spawn_pic = null
     if (data.hasSpawn){
         if (data.spawnTeam == 2){
-            spawn_pic = <img className={"Overlay"} src={spawn_red}/>
+            if (data.spawnDirection == "north"){
+                spawn_pic = <img className={"Overlay"} src={spawn_red_north}/>
+            }
+            if (data.spawnDirection == "south"){
+                spawn_pic = <img className={"Overlay"} src={spawn_red_south}/>
+            }
+            if (data.spawnDirection == "west"){
+                spawn_pic = <img className={"Overlay"} src={spawn_red_west}/>
+            }
+            if (data.spawnDirection == "east"){
+                spawn_pic = <img className={"Overlay"} src={spawn_red_east}/>
+            }
         } else{
-            spawn_pic = <img className={"Overlay"} src={spawn_blu}/>
+            if (data.spawnDirection == "north"){
+                spawn_pic = <img className={"Overlay"} src={spawn_blu_north}/>
+            }
+            if (data.spawnDirection == "south"){
+                spawn_pic = <img className={"Overlay"} src={spawn_blu_south}/>
+            }
+            if (data.spawnDirection == "west"){
+                spawn_pic = <img className={"Overlay"} src={spawn_blu_west}/>
+            }
+            if (data.spawnDirection == "east"){
+                spawn_pic = <img className={"Overlay"} src={spawn_blu_east}/>
+            }
         }
     }
     var flag_pic = null
@@ -187,61 +215,98 @@ function Square(props: { data: SquareData; handleUpdate: (data: SquareData) => v
         }
     }
 
-    
 
     // This could definitely be a switch statement.
     function handleKeyUp(event: any){
         console.log(event.key)
-        if (event.key === "ArrowUp"){
-            if (event.ctrlKey){
-                data.hasNorthDoor = !data.hasNorthDoor
-            } else if(event.shiftKey){
-                data.hasNorthRamp = !data.hasNorthRamp
-            } else{
-                data.hasNorthWall = !data.hasNorthWall
-            }
-        } else if (event.key === "ArrowDown"){
-            if (event.ctrlKey){
-                data.hasSouthDoor = !data.hasSouthDoor
-            } else if(event.shiftKey){
-                data.hasSouthRamp = !data.hasSouthRamp
-            } else{
-                data.hasSouthWall = !data.hasSouthWall
-            }
-        } else if (event.key === "ArrowRight"){
-            if (event.ctrlKey){
-                data.hasEastDoor = !data.hasEastDoor
-            } else if(event.shiftKey){
-                data.hasEastRamp = !data.hasEastRamp
-            } else{
-                data.hasEastWall = !data.hasEastWall
-            }
-        } else if(event.key === "ArrowLeft"){
-            if (event.ctrlKey){
-                data.hasWestDoor = !data.hasWestDoor
-            } else if(event.shiftKey){
-                data.hasWestRamp = !data.hasWestRamp
-            } else{
-                data.hasWestWall = !data.hasWestWall
-            }
-        } else if (event.key === "h"){
-            data.hasHealth = !data.hasHealth
-        } else if (event.key === "p"){
-            // data.hasPit = !data.hasPit
-        } else if (event.key === "c"){
-            data.hasPoint = !data.hasPoint
-        } else if (event.key === "f"){
-            data.flagTeam = 3
-            data.hasFlag = !data.hasFlag
-        } else if (event.key === "s"){
-            data.spawnTeam = 3
-            data.hasSpawn = !data.hasSpawn
-        } else if(event.key === "a"){
-            data.hasAmmoMedium = !data.hasAmmoMedium
-        } else if(event.key === " "){
-            data.hasFloor = !data.hasFloor
-        } else if (event.key === "l"){
-            data.hasLight = !data.hasLight
+
+        switch (event.key){
+            case "ArrowUp":
+                if (event.ctrlKey){
+                    data.hasNorthDoor = !data.hasNorthDoor
+                } else if(event.shiftKey){
+                    data.hasNorthRamp = !data.hasNorthRamp
+                } else{
+                    data.hasNorthWall = !data.hasNorthWall
+                }
+                break
+            case "ArrowDown":
+                if (event.ctrlKey){
+                    data.hasSouthDoor = !data.hasSouthDoor
+                } else if(event.shiftKey){
+                    data.hasSouthRamp = !data.hasSouthRamp
+                } else{
+                    data.hasSouthWall = !data.hasSouthWall
+                }
+                break
+            case "ArrowRight":
+                if (event.ctrlKey){
+                    data.hasEastDoor = !data.hasEastDoor
+                } else if(event.shiftKey){
+                    data.hasEastRamp = !data.hasEastRamp
+                } else{
+                    data.hasEastWall = !data.hasEastWall
+                }
+                break
+            case "ArrowLeft":
+                if (event.ctrlKey){
+                    data.hasWestDoor = !data.hasWestDoor
+                } else if(event.shiftKey){
+                    data.hasWestRamp = !data.hasWestRamp
+                } else{
+                    data.hasWestWall = !data.hasWestWall
+                }
+                break
+            case "h":
+                data.hasHealth = !data.hasHealth
+                break
+            case "p":
+
+                break
+            case "c":
+                data.hasPoint = !data.hasPoint
+                break
+            case "f":
+                data.flagTeam = 3
+                data.hasFlag = !data.hasFlag
+                break
+            case "s":
+                // if (event.shiftKey){
+
+                // Originally supposed to require shift, but that was funky for some reason.
+                // So just pressing it again toggles it
+                if (!data.hasSpawn){
+                    data.hasSpawn = true
+                } else{
+                    switch (data.spawnDirection){
+                        case "north":
+                            data.spawnDirection = "east"
+                            data.hasSpawn = false
+                            break
+                        case "east":
+                            data.spawnDirection = "south"
+                            break
+                        case "south":
+                            data.spawnDirection = "west"
+                            break
+                        case "west":
+                            data.spawnDirection = "north"
+                            break
+                    }
+                }
+                // }
+                console.log("SSSSSSSSSSSSSSSSSSSSS")
+                data.spawnTeam = 3
+                break
+            case "a":
+                data.hasAmmoMedium = !data.hasAmmoMedium
+                break
+            case " ":
+                data.hasFloor = !data.hasFloor
+                break
+            case "l":
+                data.hasLight = !data.hasLight
+                break
         }
 
         // mirrors this square and refreshes the state

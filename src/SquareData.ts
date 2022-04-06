@@ -18,8 +18,11 @@ const thickness = 32
  * A big limitation of this method of laying things out is that each SquareData is unaware of what happens in its neighbors.
  * However I have continued anyway, so no multi-block structures for you (probably)
  *
- * If you ever decide to add prefabs, make sure to update the mirror / clone functions as well!
- * And remember that mirror flips orientation of things (north ramp becomes south ramp)
+ * Here used to be a comment about adding structures. This code is a mess, and nobody will bother.
+ * For each change you make, you have to update the mirror / clone functions as well.
+ * And remember that mirror flips orientation of things (north ramp becomes south ramp).
+ *
+ * If you see code or a section of it described as "magic," run.
  */
 class SquareData{
 
@@ -57,6 +60,7 @@ class SquareData{
     hasWestRamp: boolean = false
 
     spawnTeam: number = 3 // 2 = BLU; 3 = RED
+    spawnDirection: string = "east"
     flagTeam: number = -1 // 2 = BLU; 3 = RED
 
     constructor(x: number,y: number, z: number, hasSky = false, dimensions: [number, number] = [256,256]) { // dimensions not used anywhere... I think I forgot why I added it
@@ -101,6 +105,22 @@ class SquareData{
         this.spawnTeam = 2
         this.flagTeam = 2
 
+        switch (other.spawnDirection){
+            case "west":
+                this.spawnDirection = "east"
+                break
+            case "east":
+                console.log(this.spawnDirection);
+                this.spawnDirection = "west"
+                break
+            case "north":
+                this.spawnDirection = "south"
+                break
+            case "south":
+                this.spawnDirection = "north"
+                break
+        }
+
     }
     clone():SquareData {
         // console.log("clone");
@@ -122,6 +142,7 @@ class SquareData{
         newsq.hasSky = this.hasSky
         newsq.hasSpawn = this.hasSpawn
         newsq.spawnTeam = this.spawnTeam
+        newsq.spawnDirection = this.spawnDirection
         newsq.hasFlag = this.hasFlag
         newsq.flagTeam = this.flagTeam
 
@@ -211,13 +232,14 @@ class SquareData{
 
             return wall
         }
+        // these are for the trigger block. they show which side the bloc k is on. which is a bit confusiong unfortunately
         if (direction == "westcabinet"){
             const right = new Point(thickness,0,0)
             const backward = new Point(0, -height, 0)
             const side = new Side(right, originPoint, backward)
 
             const wall = new Block(side, up)
-            wall.translate(0,0,thickness)
+            wall.translate(length - thickness,-length + thickness*1.5,thickness)
             return wall
         }
         if (direction == "eastcabinet"){
@@ -226,7 +248,25 @@ class SquareData{
             const side = new Side(right, originPoint, backward)
 
             const wall = new Block(side, up)
-            wall.translate(length - thickness,-length + thickness*1.5,thickness)
+            wall.translate(0,0,thickness)
+            return wall
+        }
+        if (direction == "northcabinet"){
+            const right = new Point(height,0,0)
+            const backward = new Point(0, -thickness, 0)
+            const side = new Side(right, originPoint, backward)
+
+            const wall = new Block(side, up)
+            wall.translate(0,-length + thickness,thickness)
+            return wall
+        }
+        if (direction == "southcabinet"){ // not done
+            const right = new Point(height,0,0)
+            const backward = new Point(0, -thickness, 0)
+            const side = new Side(right, originPoint, backward)
+
+            const wall = new Block(side, up)
+            wall.translate(length - thickness * 1.5,0,thickness)
             return wall
         }
         if (direction == "northramp"){ // this is ramp from south --> north
@@ -346,23 +386,30 @@ class SquareData{
             spawnCenter.translate(length * this.xCoord, length * -this.yCoord, 16 + this.zCoord*length)
 
             const spawnName = "spawn" + counter.count()
-
             const resupName = "resupply" + counter.count()
 
-            let cabinetDisp: [number,number,number] = [length-16,-length+48,thickness]
-            if (this.spawnTeam == 2){
-                cabinetDisp = [16,-48,thickness]
+            let cabinetDirection = "eastcabinet" // "west cabinet" means cabinet is facing west. used to be other way. Finally, inner peace
+            let cabinetDisp: [number,number,number] = [16, -48, thickness]
+            let spawnAngles = "0 0 0" // this faces east
+            switch (this.spawnDirection) {
+                case "west":
+                    cabinetDirection = "westcabinet"
+                    cabinetDisp = [length-16,-length+48,thickness]
+                    spawnAngles = "0 180 0" // this faces west
+                    break
+                case "south":
+                    cabinetDirection = "southcabinet"
+                    cabinetDisp = [length-48, -16, thickness]
+                    spawnAngles = "0 270 0" // guess
+                    break
+                case "north":
+                    cabinetDirection = "northcabinet"
+                    cabinetDisp = [48, -length+16, thickness]
+                    spawnAngles = "0 90 0"
+                    break
             }
 
-            let cabinetDirection = "eastcabinet"
-            if (this.spawnTeam == 2){
-                cabinetDirection = "westcabinet"
-            }
-
-            let spawnAngles = "0 180 0" // this faces east
-            if (this.spawnTeam == 2){
-                spawnAngles = "0 0 0" // this faces west
-            }
+            // previously here: spawn team 2 = face west
 
             returnString += `
                 entity
@@ -433,6 +480,7 @@ class SquareData{
                         
                         // now for the cabinet
                         // this is locker
+                        
                         entity
                         {
                         "id" "${counter.count()}"
